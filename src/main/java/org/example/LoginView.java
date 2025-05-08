@@ -12,7 +12,7 @@ public class LoginView extends JFrame {
 
     public LoginView() {
         setTitle("Login - Elo Statistics System");
-        setSize(400, 200);
+        setSize(400, 250); // Tăng chiều cao để giao diện thoáng hơn
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -21,12 +21,13 @@ public class LoginView extends JFrame {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(new Color(240, 240, 240));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(10, 10, 10, 10); // Khoảng cách giữa các thành phần
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
 
         // Tiêu đề
         JLabel titleLabel = new JLabel("Login", JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titleLabel.setForeground(new Color(0, 102, 204));
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -37,17 +38,25 @@ public class LoginView extends JFrame {
         gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy = 1;
-        mainPanel.add(new JLabel("Username:"), gbc);
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        mainPanel.add(usernameLabel, gbc);
+
         gbc.gridx = 1;
         inUsername = new JTextField(15);
+        inUsername.setFont(new Font("Arial", Font.PLAIN, 14));
         mainPanel.add(inUsername, gbc);
 
         // Ô nhập mật khẩu
         gbc.gridx = 0;
         gbc.gridy = 2;
-        mainPanel.add(new JLabel("Password:"), gbc);
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        mainPanel.add(passwordLabel, gbc);
+
         gbc.gridx = 1;
         inPassword = new JPasswordField(15);
+        inPassword.setFont(new Font("Arial", Font.PLAIN, 14));
         mainPanel.add(inPassword, gbc);
 
         // Nút đăng nhập
@@ -57,6 +66,7 @@ public class LoginView extends JFrame {
         subLogin = new JButton("Login");
         subLogin.setBackground(new Color(0, 102, 204));
         subLogin.setForeground(Color.WHITE);
+        subLogin.setFont(new Font("Arial", Font.BOLD, 14));
         mainPanel.add(subLogin, gbc);
 
         // Thêm panel vào frame
