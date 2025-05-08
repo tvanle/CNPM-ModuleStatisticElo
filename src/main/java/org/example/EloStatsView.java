@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 
 public class EloStatsView extends JFrame {
     private JComboBox<String> inTournament;
-    private JLabel tournamentInfoLabel;
     private JTable outsubListPlayers;
     private JTextField inNationality;
     private JTextField inEloChange;
@@ -16,8 +15,6 @@ public class EloStatsView extends JFrame {
     private JButton subSortByChange;
     private JButton subViewMatches;
     private JButton subExportStats;
-    private JButton subRefresh;
-    private JButton subLogout;
 
     public EloStatsView() {
         setTitle("Elo Statistics System");
@@ -30,38 +27,18 @@ public class EloStatsView extends JFrame {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         mainPanel.setBackground(new Color(240, 240, 240));
 
-        // Panel chọn giải đấu và thông tin giải đấu
-        JPanel topPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        topPanel.add(new JLabel("Select Tournament:"), gbc);
-
-        gbc.gridx = 1;
+        // Panel chọn giải đấu
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topPanel.add(new JLabel("Select Tournament:"));
         inTournament = new JComboBox<>(new String[]{"Tournament 1", "Tournament 2", "Tournament 3"});
-        topPanel.add(inTournament, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        tournamentInfoLabel = new JLabel("Tournament: Tournament 1, Year: 2025, Location: New York");
-        tournamentInfoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        tournamentInfoLabel.setForeground(new Color(0, 102, 204));
-        topPanel.add(tournamentInfoLabel, gbc);
-
+        topPanel.add(inTournament);
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
         // Bảng hiển thị danh sách kỳ thủ
         String[] columnNames = {"ID", "Name", "Birth Year", "Nationality", "Initial Elo", "Final Elo", "Elo Change"};
         Object[][] data = {
                 {"1", "Player 1", "1990", "USA", "2500", "2520", "20"},
-                {"2", "Player 2", "1985", "UK", "2450", "2430", "-20"},
-                {"3", "Player 3", "1992", "Canada", "2600", "2620", "20"},
-                {"4", "Player 4", "1988", "Germany", "2550", "2570", "20"},
-                {"5", "Player 5", "1995", "France", "2400", "2380", "-20"}
+                {"2", "Player 2", "1985", "UK", "2450", "2430", "-20"}
         };
         outsubListPlayers = new JTable(data, columnNames);
         outsubListPlayers.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -70,7 +47,7 @@ public class EloStatsView extends JFrame {
 
         // Panel lọc và nút chức năng
         JPanel controlPanel = new JPanel(new GridBagLayout());
-        gbc = new GridBagConstraints();
+        GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
@@ -112,24 +89,11 @@ public class EloStatsView extends JFrame {
         subViewMatches.setForeground(Color.WHITE);
         controlPanel.add(subViewMatches, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridx = 4;
         subExportStats = new JButton("Export Stats");
         subExportStats.setBackground(new Color(255, 153, 0));
         subExportStats.setForeground(Color.WHITE);
         controlPanel.add(subExportStats, gbc);
-
-        gbc.gridx = 1;
-        subRefresh = new JButton("Refresh");
-        subRefresh.setBackground(new Color(0, 153, 76));
-        subRefresh.setForeground(Color.WHITE);
-        controlPanel.add(subRefresh, gbc);
-
-        gbc.gridx = 2;
-        subLogout = new JButton("Logout");
-        subLogout.setBackground(new Color(204, 0, 0));
-        subLogout.setForeground(Color.WHITE);
-        controlPanel.add(subLogout, gbc);
 
         mainPanel.add(controlPanel, BorderLayout.SOUTH);
 
@@ -155,23 +119,6 @@ public class EloStatsView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(null, "Stats exported successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
-
-        // Xử lý sự kiện nút "Refresh"
-        subRefresh.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Data refreshed!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
-
-        // Xử lý sự kiện nút "Logout"
-        subLogout.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-                new LoginView().setVisible(true);
             }
         });
     }

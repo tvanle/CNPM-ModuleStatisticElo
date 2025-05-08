@@ -9,7 +9,6 @@ public class MatchesListView extends JFrame {
     private JTable outsubListMatches;
     private JButton subViewMatchDetail;
     private JButton subBackToEloStats;
-    private JButton subRefresh;
 
     public MatchesListView() {
         setTitle("Matches List - Player");
@@ -32,15 +31,7 @@ public class MatchesListView extends JFrame {
         String[] columnNames = {"ID", "Date", "Result", "Round Number"};
         Object[][] data = {
                 {"1", "2025-05-01", "W", "1"},
-                {"2", "2025-05-02", "D", "2"},
-                {"3", "2025-05-03", "L", "3"},
-                {"4", "2025-05-04", "W", "4"},
-                {"5", "2025-05-05", "D", "5"},
-                {"6", "2025-05-06", "L", "6"},
-                {"7", "2025-05-07", "W", "7"},
-                {"8", "2025-05-08", "D", "8"},
-                {"9", "2025-05-09", "L", "9"},
-                {"10", "2025-05-10", "W", "10"}
+                {"2", "2025-05-02", "D", "2"}
         };
         outsubListMatches = new JTable(data, columnNames);
         outsubListMatches.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -53,11 +44,6 @@ public class MatchesListView extends JFrame {
         subViewMatchDetail.setBackground(new Color(0, 153, 76));
         subViewMatchDetail.setForeground(Color.WHITE);
         buttonPanel.add(subViewMatchDetail);
-
-        subRefresh = new JButton("Refresh");
-        subRefresh.setBackground(new Color(0, 153, 76));
-        subRefresh.setForeground(Color.WHITE);
-        buttonPanel.add(subRefresh);
 
         subBackToEloStats = new JButton("Back to Elo Stats");
         subBackToEloStats.setBackground(new Color(204, 0, 0));
@@ -76,18 +62,10 @@ public class MatchesListView extends JFrame {
                 int selectedRow = outsubListMatches.getSelectedRow();
                 if (selectedRow >= 0) {
                     dispose();
-                    new MatchDetailView(selectedRow).setVisible(true);
+                    new MatchDetailView().setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select a match!", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
-            }
-        });
-
-        // Xử lý sự kiện nút "Refresh"
-        subRefresh.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Matches refreshed!", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 

@@ -9,11 +9,10 @@ public class LoginView extends JFrame {
     private JTextField inUsername;
     private JPasswordField inPassword;
     private JButton subLogin;
-    private JButton subCancel;
 
     public LoginView() {
         setTitle("Login - Elo Statistics System");
-        setSize(400, 250);
+        setSize(400, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -26,7 +25,7 @@ public class LoginView extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Tiêu đề
-        JLabel titleLabel = new JLabel("Login to System", JLabel.CENTER);
+        JLabel titleLabel = new JLabel("Login", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setForeground(new Color(0, 102, 204));
         gbc.gridx = 0;
@@ -51,22 +50,14 @@ public class LoginView extends JFrame {
         inPassword = new JPasswordField(15);
         mainPanel.add(inPassword, gbc);
 
-        // Panel chứa nút
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        subLogin = new JButton("Login");
-        subLogin.setBackground(new Color(0, 102, 204));
-        subLogin.setForeground(Color.WHITE);
-        buttonPanel.add(subLogin);
-
-        subCancel = new JButton("Cancel");
-        subCancel.setBackground(new Color(204, 0, 0));
-        subCancel.setForeground(Color.WHITE);
-        buttonPanel.add(subCancel);
-
+        // Nút đăng nhập
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 2;
-        mainPanel.add(buttonPanel, gbc);
+        subLogin = new JButton("Login");
+        subLogin.setBackground(new Color(0, 102, 204));
+        subLogin.setForeground(Color.WHITE);
+        mainPanel.add(subLogin, gbc);
 
         // Thêm panel vào frame
         add(mainPanel);
@@ -84,14 +75,6 @@ public class LoginView extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(null, "Login failed!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-            }
-        });
-
-        // Xử lý sự kiện nút Cancel
-        subCancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
             }
         });
     }
