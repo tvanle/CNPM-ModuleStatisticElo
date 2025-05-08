@@ -31,7 +31,10 @@ public class MatchesListView extends JFrame {
         String[] columnNames = {"ID", "Date", "Result", "Round Number"};
         Object[][] data = {
                 {"1", "2025-05-01", "W", "1"},
-                {"2", "2025-05-02", "D", "2"}
+                {"2", "2025-05-02", "D", "2"},
+                {"3", "2025-05-03", "L", "3"},
+                {"4", "2025-05-04", "W", "4"},
+                {"5", "2025-05-05", "D", "5"}
         };
         outsubListMatches = new JTable(data, columnNames);
         outsubListMatches.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

@@ -15,6 +15,7 @@ public class EloStatsView extends JFrame {
     private JButton subSortByChange;
     private JButton subViewMatches;
     private JButton subExportStats;
+    private JButton subBackToHome; // Nút quay về trang chủ
 
     public EloStatsView() {
         setTitle("Elo Statistics System");
@@ -89,11 +90,18 @@ public class EloStatsView extends JFrame {
         subViewMatches.setForeground(Color.WHITE);
         controlPanel.add(subViewMatches, gbc);
 
-        gbc.gridx = 4;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         subExportStats = new JButton("Export Stats");
         subExportStats.setBackground(new Color(255, 153, 0));
         subExportStats.setForeground(Color.WHITE);
         controlPanel.add(subExportStats, gbc);
+
+        gbc.gridx = 1;
+        subBackToHome = new JButton("Back to Home");
+        subBackToHome.setBackground(new Color(204, 0, 0));
+        subBackToHome.setForeground(Color.WHITE);
+        controlPanel.add(subBackToHome, gbc);
 
         mainPanel.add(controlPanel, BorderLayout.SOUTH);
 
@@ -119,6 +127,15 @@ public class EloStatsView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(null, "Stats exported successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        // Xử lý sự kiện nút "Back to Home"
+        subBackToHome.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new HomeView().setVisible(true);
             }
         });
     }

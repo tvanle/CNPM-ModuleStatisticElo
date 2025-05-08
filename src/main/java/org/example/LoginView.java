@@ -12,7 +12,7 @@ public class LoginView extends JFrame {
 
     public LoginView() {
         setTitle("Login - Elo Statistics System");
-        setSize(400, 250); // Tăng chiều cao để giao diện thoáng hơn
+        setSize(400, 250);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -21,7 +21,7 @@ public class LoginView extends JFrame {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(new Color(240, 240, 240));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10); // Khoảng cách giữa các thành phần
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
 
@@ -81,7 +81,7 @@ public class LoginView extends JFrame {
                 boolean loginSuccess = checkLogin(username, password);
                 if (loginSuccess) {
                     dispose();
-                    new EloStatsView().setVisible(true);
+                    new HomeView().setVisible(true); // Chuyển sang HomeView
                 } else {
                     JOptionPane.showMessageDialog(null, "Login failed!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
