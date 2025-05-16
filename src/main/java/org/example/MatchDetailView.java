@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class MatchDetailView extends JFrame {
     private JLabel outsubMatchInfo;
@@ -31,8 +32,10 @@ public class MatchDetailView extends JFrame {
         gbc.gridy = 0;
         mainPanel.add(titleLabel, gbc);
 
-        // Hiển thị thông tin trận đấu
-        outsubMatchInfo = new JLabel("<html>ID: 1<br>Opponent: Player 2<br>Elo Change: +20</html>");
+        // Hiển thị thông tin trận đấu (giả lập cho match M1)
+        String matchId = "M1"; // Giả lập chọn trận M1
+        loadMatchDetails(matchId);
+
         gbc.gridy = 1;
         mainPanel.add(outsubMatchInfo, gbc);
 
@@ -54,5 +57,40 @@ public class MatchDetailView extends JFrame {
                 new MatchesListView().setVisible(true);
             }
         });
+    }
+
+    // Tải chi tiết trận đấu
+    private void loadMatchDetails(String matchId) {
+        MatchDAO matchDAO = new MatchDAO();
+        Match match = matchDAO.getMatchById(matchId);
+        if (match == null) {
+            outsubMatchInfo = new JLabel("Match not found!");
+            return;
+        }
+
+        MatchPlayerDAO matchPlayerDAO = new MatchPlayerDAO();
+        List<MatchPlayer> matchPlayers = matchPlayerDAO.getMatchPlayersByMatch(matchId);
+        ChessPlayerDAO chessPlayerDAO = new ChessPlayerDAO();
+        RoundDAO roundDAO = new RoundDAO();
+        Round round = roundDAO.getRoundById(match.getRoundId());
+
+        StringBuilder info = new StringBuilder("<html>");
+        info.append("ID: ").append(match.getId()).append("<br>");
+        info.append("Date: ").append(match.getDate()).append("<br>");
+        info.append("Round: ").append(round != null ? round.getRoundNum() : "N/A").append("<br>");
+
+        if (matchPlayers.size() >= 2) {
+            // Giả lập Player1 là kỳ thủ được chọn (P1)
+            MatchPlayer player1 = matchPlayers.get(0);
+            MatchPlayer player2 = matchPlayers.get(1);
+            ChessPlayer opponent = chessPlayerDAO.getChessPlayerById(player2.getChessPlayerId());
+            info.append("Opponent: ").append(opponent != null ? opponent.getName() : "N/A").append("<br>");
+            info.append("Elo Change: ").append(player1.getEloChange());
+        } else {
+            info.append("Opponent: N/A<br>Elo Change: N/A");
+        }
+        info.append("</html>");
+
+        outsubMatchInfo = new JLabel(info.toString());
     }
 }

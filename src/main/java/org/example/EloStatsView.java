@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class EloStatsView extends JFrame {
     private JComboBox<String> inTournament;
@@ -15,7 +16,7 @@ public class EloStatsView extends JFrame {
     private JButton subSortByChange;
     private JButton subViewMatches;
     private JButton subExportStats;
-    private JButton subBackToHome; // Nút quay về trang chủ
+    private JButton subBackToHome;
 
     public EloStatsView() {
         setTitle("Elo Statistics System");
@@ -31,16 +32,13 @@ public class EloStatsView extends JFrame {
         // Panel chọn giải đấu
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.add(new JLabel("Select Tournament:"));
-        inTournament = new JComboBox<>(new String[]{"Tournament 1", "Tournament 2", "Tournament 3"});
+        inTournament = new JComboBox<>();
         topPanel.add(inTournament);
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
         // Bảng hiển thị danh sách kỳ thủ
         String[] columnNames = {"ID", "Name", "Birth Year", "Nationality", "Initial Elo", "Final Elo", "Elo Change"};
-        Object[][] data = {
-                {"1", "Player 1", "1990", "USA", "2500", "2520", "20"},
-                {"2", "Player 2", "1985", "UK", "2450", "2430", "-20"}
-        };
+        Object[][] data = {};
         outsubListPlayers = new JTable(data, columnNames);
         outsubListPlayers.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane tableScrollPane = new JScrollPane(outsubListPlayers);
@@ -108,6 +106,20 @@ public class EloStatsView extends JFrame {
         // Thêm panel vào frame
         add(mainPanel);
 
+        // Xử lý sự kiện chọn giải đấu
+        inTournament.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedTournament = (String) inTournament.getSelectedItem();
+                String tournamentId = "T1"; // Mặc định là T1
+                if ("European Chess Open 2025".equals(selectedTournament)) {
+                    tournamentId = "T2";
+                }
+                List<ChessPlayer> players = new ChessPlayerDAO().getChessPlayersByTournament(tournamentId);
+                updatePlayerTable(players);
+            }
+        });
+
         // Xử lý sự kiện nút "View Matches"
         subViewMatches.addActionListener(new ActionListener() {
             @Override
@@ -138,5 +150,34 @@ public class EloStatsView extends JFrame {
                 new HomeView().setVisible(true);
             }
         });
+
+        // Tải danh sách giải đấu khi khởi động
+        loadTournaments();
+    }
+
+    // Tải danh sách giải đấu
+    private void loadTournaments() {
+        TournamentDAO tournamentDAO = new TournamentDAO();
+        List<Tournament> tournaments = tournamentDAO.getAllTournaments();
+        for (Tournament tournament : tournaments) {
+            inTournament.addItem(tournament.getName());
+        }
+    }
+
+    // Cập nhật bảng kỳ thủ
+    private void updatePlayerTable(List<ChessPlayer> players) {
+        String[] columnNames = {"ID", "Name", "Birth Year", "Nationality", "Initial Elo", "Final Elo", "Elo Change"};
+        Object[][] data = new Object[players.size()][7];
+        for (int i = 0; i < players.size(); i++) {
+            ChessPlayer player = players.get(i);
+            data[i][0] = player.getId();
+            data[i][1] = player.getName();
+            data[i][2] = player.getBirthYear();
+            data[i][3] = player.getNationality();
+            data[i][4] = player.getInitialElo();
+            data[i][5] = player.getFinalElo();
+            data[i][6] = player.getFinalElo() - player.getInitialElo();
+        }
+        outsubListPlayers.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
     }
 }

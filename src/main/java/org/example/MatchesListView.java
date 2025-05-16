@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class MatchesListView extends JFrame {
     private JTable outsubListMatches;
@@ -22,20 +23,14 @@ public class MatchesListView extends JFrame {
         mainPanel.setBackground(new Color(240, 240, 240));
 
         // Tiêu đề
-        JLabel titleLabel = new JLabel("Matches for Player 1", JLabel.CENTER);
+        JLabel titleLabel = new JLabel("Matches for Player", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         titleLabel.setForeground(new Color(0, 102, 204));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
 
         // Bảng hiển thị danh sách trận đấu
         String[] columnNames = {"ID", "Date", "Result", "Round Number"};
-        Object[][] data = {
-                {"1", "2025-05-01", "W", "1"},
-                {"2", "2025-05-02", "D", "2"},
-                {"3", "2025-05-03", "L", "3"},
-                {"4", "2025-05-04", "W", "4"},
-                {"5", "2025-05-05", "D", "5"}
-        };
+        Object[][] data = {};
         outsubListMatches = new JTable(data, columnNames);
         outsubListMatches.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane tableScrollPane = new JScrollPane(outsubListMatches);
@@ -57,6 +52,9 @@ public class MatchesListView extends JFrame {
 
         // Thêm panel vào frame
         add(mainPanel);
+
+        // Tải danh sách trận đấu (giả lập kỳ thủ P1, giải đấu T1)
+        loadMatches("P1", "T1");
 
         // Xử lý sự kiện nút "View Match Detail"
         subViewMatchDetail.addActionListener(new ActionListener() {
@@ -80,5 +78,23 @@ public class MatchesListView extends JFrame {
                 new EloStatsView().setVisible(true);
             }
         });
+    }
+
+    // Tải danh sách trận đấu
+    private void loadMatches(String chessPlayerId, String tournamentId) {
+        MatchPlayerDAO matchPlayerDAO = new MatchPlayerDAO();
+        List<Match> matches = matchPlayerDAO.getMatches(chessPlayerId, tournamentId);
+        String[] columnNames = {"ID", "Date", "Result", "Round Number"};
+        Object[][] data = new Object[matches.size()][4];
+        RoundDAO roundDAO = new RoundDAO();
+        for (int i = 0; i < matches.size(); i++) {
+            Match match = matches.get(i);
+            Round round = roundDAO.getRoundById(match.getRoundId());
+            data[i][0] = match.getId();
+            data[i][1] = match.getDate();
+            data[i][2] = match.getResult();
+            data[i][3] = round != null ? round.getRoundNum() : "N/A";
+        }
+        outsubListMatches.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
     }
 }
