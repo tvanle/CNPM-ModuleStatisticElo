@@ -1,8 +1,11 @@
 package org.example;
 
+import javax.swing.SwingUtilities;
+import view.user.LoginView;
+
 public class Main {
     public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 new LoginView().setVisible(true);

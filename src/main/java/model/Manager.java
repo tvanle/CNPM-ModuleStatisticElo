@@ -1,0 +1,63 @@
+package model;
+
+import java.io.Serializable;
+
+public class Manager implements Serializable {
+    private String id;
+    private String username;
+    private String password;
+    private String position;
+    private float salary;
+
+    public Manager() {
+        super();
+    }
+
+    public Manager(String id, String username, String password, String position, float salary) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.position = position;
+        this.salary = salary;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public float getSalary() {
+        return salary;
+    }
+
+    public void setSalary(float salary) {
+        this.salary = salary;
+    }
+}

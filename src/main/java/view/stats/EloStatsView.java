@@ -1,22 +1,27 @@
-package org.example;
+package view.stats;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
+import dao.ChessPlayerDAO;
+import dao.TournamentDAO;
+import model.ChessPlayer;
+import model.Tournament;
+import view.user.HomeView;
 
 public class EloStatsView extends JFrame {
     private JComboBox<String> inTournament;
     private JTable outsubListPlayers;
     private JTextField inNationality;
-    private JTextField inEloChange;
+    private JComboBox<String> eloChangeFilterType;
     private JButton subFilter;
-    private JButton subSortByElo;
-    private JButton subSortByChange;
     private JButton subViewMatches;
     private JButton subExportStats;
     private JButton subBackToHome;
+    private List<ChessPlayer> currentPlayers;
 
     public EloStatsView() {
         setTitle("Elo Statistics System");
@@ -58,10 +63,10 @@ public class EloStatsView extends JFrame {
         controlPanel.add(inNationality, gbc);
 
         gbc.gridx = 2;
-        controlPanel.add(new JLabel("Filter by Elo Change:"), gbc);
+        controlPanel.add(new JLabel("Sort Elo Change:"), gbc);
         gbc.gridx = 3;
-        inEloChange = new JTextField(10);
-        controlPanel.add(inEloChange, gbc);
+        eloChangeFilterType = new JComboBox<>(new String[]{"Descending (↓)", "Ascending (↑)"});
+        controlPanel.add(eloChangeFilterType, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -71,31 +76,18 @@ public class EloStatsView extends JFrame {
         controlPanel.add(subFilter, gbc);
 
         gbc.gridx = 1;
-        subSortByElo = new JButton("Sort by Elo");
-        subSortByElo.setBackground(new Color(0, 102, 204));
-        subSortByElo.setForeground(Color.WHITE);
-        controlPanel.add(subSortByElo, gbc);
-
-        gbc.gridx = 2;
-        subSortByChange = new JButton("Sort by Change");
-        subSortByChange.setBackground(new Color(0, 102, 204));
-        subSortByChange.setForeground(Color.WHITE);
-        controlPanel.add(subSortByChange, gbc);
-
-        gbc.gridx = 3;
         subViewMatches = new JButton("View Matches");
         subViewMatches.setBackground(new Color(0, 153, 76));
         subViewMatches.setForeground(Color.WHITE);
         controlPanel.add(subViewMatches, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridx = 2;
         subExportStats = new JButton("Export Stats");
         subExportStats.setBackground(new Color(255, 153, 0));
         subExportStats.setForeground(Color.WHITE);
         controlPanel.add(subExportStats, gbc);
 
-        gbc.gridx = 1;
+        gbc.gridx = 3;
         subBackToHome = new JButton("Back to Home");
         subBackToHome.setBackground(new Color(204, 0, 0));
         subBackToHome.setForeground(Color.WHITE);
@@ -115,8 +107,48 @@ public class EloStatsView extends JFrame {
                 if ("European Chess Open 2025".equals(selectedTournament)) {
                     tournamentId = "T2";
                 }
-                List<ChessPlayer> players = new ChessPlayerDAO().getChessPlayersByTournament(tournamentId);
-                updatePlayerTable(players);
+                currentPlayers = new ChessPlayerDAO().getChessPlayersByTournament(tournamentId);
+                updatePlayerTable(currentPlayers);
+            }
+        });
+
+        // Xử lý sự kiện nút "Filter"
+        subFilter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (currentPlayers == null || currentPlayers.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Please select a tournament first!", "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                String nationalityFilter = inNationality.getText().trim();
+                String filterType = (String) eloChangeFilterType.getSelectedItem();
+
+                // Lọc theo quốc tịch trước
+                List<ChessPlayer> filteredPlayers = new ArrayList<>();
+                for (ChessPlayer player : currentPlayers) {
+                    boolean matchesNationality = nationalityFilter.isEmpty() || player.getNationality().equalsIgnoreCase(nationalityFilter);
+                    if (matchesNationality) {
+                        filteredPlayers.add(player);
+                    }
+                }
+
+                // Sắp xếp theo mức thay đổi Elo
+                if (filterType.equals("Descending (↓)")) {
+                    filteredPlayers.sort((p1, p2) -> {
+                        int eloChange1 = p1.getFinalElo() - p1.getInitialElo();
+                        int eloChange2 = p2.getFinalElo() - p2.getInitialElo();
+                        return Integer.compare(eloChange2, eloChange1); // Giảm dần
+                    });
+                } else if (filterType.equals("Ascending (↑)")) {
+                    filteredPlayers.sort((p1, p2) -> {
+                        int eloChange1 = p1.getFinalElo() - p1.getInitialElo();
+                        int eloChange2 = p2.getFinalElo() - p2.getInitialElo();
+                        return Integer.compare(eloChange1, eloChange2); // Tăng dần
+                    });
+                }
+
+                updatePlayerTable(filteredPlayers);
             }
         });
 
@@ -157,8 +189,8 @@ public class EloStatsView extends JFrame {
 
     // Tải danh sách giải đấu
     private void loadTournaments() {
-        TournamentDAO tournamentDAO = new TournamentDAO();
-        List<Tournament> tournaments = tournamentDAO.getAllTournaments();
+        TournamentDAO    tournamentDAO = new TournamentDAO();
+        List<Tournament> tournaments   = tournamentDAO.getAllTournaments();
         for (Tournament tournament : tournaments) {
             inTournament.addItem(tournament.getName());
         }

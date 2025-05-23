@@ -1,9 +1,14 @@
-package org.example;
+package dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import model.Tournament;
 
-public class TournamentDAO {
+public class TournamentDAO extends DAO {
+    public TournamentDAO() {
+        super();
+    }
+
     public List<Tournament> getAllTournaments() {
         List<Tournament> tournaments = new ArrayList<>();
         tournaments.add(new Tournament("T1", "World Chess Championship 2025", 2025, 1, "New York", "Giải vô địch cờ vua thế giới"));

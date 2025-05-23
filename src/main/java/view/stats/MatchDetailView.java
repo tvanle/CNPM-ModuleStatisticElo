@@ -1,10 +1,18 @@
-package org.example;
+package view.stats;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import dao.ChessPlayerDAO;
+import dao.MatchDAO;
+import dao.MatchPlayerDAO;
+import dao.RoundDAO;
+import model.ChessPlayer;
+import model.Match;
+import model.MatchPlayer;
+import model.Round;
 
 public class MatchDetailView extends JFrame {
     private JLabel outsubMatchInfo;
@@ -13,7 +21,7 @@ public class MatchDetailView extends JFrame {
     public MatchDetailView() {
         setTitle("Match Detail");
         setSize(400, 200);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // Tạo panel chính với GridBagLayout
@@ -71,8 +79,8 @@ public class MatchDetailView extends JFrame {
         MatchPlayerDAO matchPlayerDAO = new MatchPlayerDAO();
         List<MatchPlayer> matchPlayers = matchPlayerDAO.getMatchPlayersByMatch(matchId);
         ChessPlayerDAO chessPlayerDAO = new ChessPlayerDAO();
-        RoundDAO roundDAO = new RoundDAO();
-        Round round = roundDAO.getRoundById(match.getRoundId());
+        RoundDAO       roundDAO       = new RoundDAO();
+        Round          round          = roundDAO.getRoundById(match.getRoundId());
 
         StringBuilder info = new StringBuilder("<html>");
         info.append("ID: ").append(match.getId()).append("<br>");
@@ -85,9 +93,10 @@ public class MatchDetailView extends JFrame {
             MatchPlayer player2 = matchPlayers.get(1);
             ChessPlayer opponent = chessPlayerDAO.getChessPlayerById(player2.getChessPlayerId());
             info.append("Opponent: ").append(opponent != null ? opponent.getName() : "N/A").append("<br>");
+            info.append("Result: ").append(player1.getResult()).append("<br>");
             info.append("Elo Change: ").append(player1.getEloChange());
         } else {
-            info.append("Opponent: N/A<br>Elo Change: N/A");
+            info.append("Opponent: N/A<br>Result: N/A<br>Elo Change: N/A");
         }
         info.append("</html>");
 

@@ -1,8 +1,13 @@
-package org.example;
+package dao;
 
-public class ManagerDAO {
+import model.Manager;
+
+public class ManagerDAO extends DAO {
+    public ManagerDAO() {
+        super();
+    }
+
     public boolean checkLogin(Manager manager) {
-        // Giả lập kiểm tra đăng nhập
         if ("admin".equals(manager.getUsername()) && "123456".equals(manager.getPassword())) {
             manager.setPosition("Administrator");
             return true;

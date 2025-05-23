@@ -1,9 +1,10 @@
-package org.example;
+package view.user;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import view.stats.EloStatsView;
 
 public class HomeView extends JFrame {
     private JButton eloStatsButton;

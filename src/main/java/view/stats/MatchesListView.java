@@ -1,10 +1,15 @@
-package org.example;
+package view.stats;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import dao.MatchPlayerDAO;
+import dao.RoundDAO;
+import model.Match;
+import model.MatchPlayer;
+import model.Round;
 
 public class MatchesListView extends JFrame {
     private JTable outsubListMatches;
@@ -14,7 +19,7 @@ public class MatchesListView extends JFrame {
     public MatchesListView() {
         setTitle("Matches List - Player");
         setSize(700, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // Tạo panel chính với BorderLayout
@@ -84,15 +89,27 @@ public class MatchesListView extends JFrame {
     private void loadMatches(String chessPlayerId, String tournamentId) {
         MatchPlayerDAO matchPlayerDAO = new MatchPlayerDAO();
         List<Match> matches = matchPlayerDAO.getMatches(chessPlayerId, tournamentId);
+        List<MatchPlayer> matchPlayers = matchPlayerDAO.getMatchPlayersByMatch(null);
+
         String[] columnNames = {"ID", "Date", "Result", "Round Number"};
         Object[][] data = new Object[matches.size()][4];
         RoundDAO roundDAO = new RoundDAO();
         for (int i = 0; i < matches.size(); i++) {
             Match match = matches.get(i);
             Round round = roundDAO.getRoundById(match.getRoundId());
+
+            // Tìm MatchPlayer tương ứng với kỳ thủ trong trận đấu
+            String result = "N/A";
+            for (MatchPlayer mp : matchPlayers) {
+                if (mp.getMatchId().equals(match.getId()) && mp.getChessPlayerId().equals(chessPlayerId)) {
+                    result = mp.getResult();
+                    break;
+                }
+            }
+
             data[i][0] = match.getId();
             data[i][1] = match.getDate();
-            data[i][2] = match.getResult();
+            data[i][2] = result;
             data[i][3] = round != null ? round.getRoundNum() : "N/A";
         }
         outsubListMatches.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));

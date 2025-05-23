@@ -1,9 +1,11 @@
-package org.example;
+package view.user;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import dao.ManagerDAO;
+import model.Manager;
 
 public class LoginView extends JFrame {
     private JTextField inUsername;
@@ -12,7 +14,7 @@ public class LoginView extends JFrame {
 
     public LoginView() {
         setTitle("Login - Elo Statistics System");
-        setSize(450, 300); // Tăng kích thước cửa sổ để có không gian hiển thị tốt hơn
+        setSize(450, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -43,9 +45,9 @@ public class LoginView extends JFrame {
         mainPanel.add(usernameLabel, gbc);
 
         gbc.gridx = 1;
-        inUsername = new JTextField(20); // Tăng số cột từ 15 lên 20 để trường nhập liệu dài hơn
-        inUsername.setFont(new Font("Arial", Font.PLAIN, 16)); // Tăng cỡ chữ để dễ đọc hơn
-        inUsername.setPreferredSize(new Dimension(250, 30)); // Đặt kích thước cố định cho trường nhập liệu
+        inUsername = new JTextField(20);
+        inUsername.setFont(new Font("Arial", Font.PLAIN, 16));
+        inUsername.setPreferredSize(new Dimension(250, 30));
         mainPanel.add(inUsername, gbc);
 
         // Ô nhập mật khẩu
@@ -56,9 +58,9 @@ public class LoginView extends JFrame {
         mainPanel.add(passwordLabel, gbc);
 
         gbc.gridx = 1;
-        inPassword = new JPasswordField(20); // Tăng số cột từ 15 lên 20
-        inPassword.setFont(new Font("Arial", Font.PLAIN, 16)); // Tăng cỡ chữ
-        inPassword.setPreferredSize(new Dimension(250, 30)); // Đặt kích thước cố định
+        inPassword = new JPasswordField(20);
+        inPassword.setFont(new Font("Arial", Font.PLAIN, 16));
+        inPassword.setPreferredSize(new Dimension(250, 30));
         mainPanel.add(inPassword, gbc);
 
         // Nút đăng nhập
@@ -69,7 +71,7 @@ public class LoginView extends JFrame {
         subLogin.setBackground(new Color(0, 102, 204));
         subLogin.setForeground(Color.WHITE);
         subLogin.setFont(new Font("Arial", Font.BOLD, 14));
-        subLogin.setPreferredSize(new Dimension(100, 40)); // Tăng kích thước nút để cân đối
+        subLogin.setPreferredSize(new Dimension(100, 40));
         mainPanel.add(subLogin, gbc);
 
         // Thêm panel vào frame
@@ -86,7 +88,7 @@ public class LoginView extends JFrame {
                 boolean loginSuccess = managerDAO.checkLogin(manager);
                 if (loginSuccess) {
                     dispose();
-                    new HomeView().setVisible(true); // Chuyển sang HomeView
+                    new HomeView().setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Login failed!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
