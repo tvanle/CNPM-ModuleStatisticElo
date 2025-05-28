@@ -11,40 +11,79 @@ public class ChessPlayerDAO extends DAO {
 
     public List<ChessPlayer> getChessPlayersByTournament(String tournamentId) {
         List<ChessPlayer> players = new ArrayList<>();
-        if ("T1".equals(tournamentId)) {
-            players.add(new ChessPlayer("P1", "Alice", "USA", 1990, "ID001", 1500));
-            players.add(new ChessPlayer("P2", "Bob", "UK", 1985, "ID002", 1600));
-            players.add(new ChessPlayer("P5", "Eve", "USA", 1995, "ID005", 1400));
-        } else if ("T2".equals(tournamentId)) {
-            players.add(new ChessPlayer("P3", "Charlie", "France", 1992, "ID003", 1700));
-            players.add(new ChessPlayer("P4", "David", "Germany", 1988, "ID004", 1800));
+        try {
+            String sql = "SELECT * FROM chess_player WHERE tournament_id = ?";
+            var pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, tournamentId);
+            var rs = pstmt.executeQuery();
+            while (rs.next()) {
+                ChessPlayer player = new ChessPlayer(
+                    rs.getString("id"),
+                    rs.getString("name"),
+                    rs.getString("nationality"),
+                    rs.getInt("birth_year"),
+                    rs.getString("fide_id"),
+                    rs.getInt("initial_elo")
+                );
+                players.add(player);
+            }
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return players;
     }
 
     public ChessPlayer getChessPlayerById(String chessPlayerId) {
-        List<ChessPlayer> allPlayers = new ArrayList<>();
-        allPlayers.add(new ChessPlayer("P1", "Alice", "USA", 1990, "ID001", 1500));
-        allPlayers.add(new ChessPlayer("P2", "Bob", "UK", 1985, "ID002", 1600));
-        allPlayers.add(new ChessPlayer("P3", "Charlie", "France", 1992, "ID003", 1700));
-        allPlayers.add(new ChessPlayer("P4", "David", "Germany", 1988, "ID004", 1800));
-        allPlayers.add(new ChessPlayer("P5", "Eve", "USA", 1995, "ID005", 1400));
-
-        for (ChessPlayer player : allPlayers) {
-            if (player.getId().equals(chessPlayerId)) {
+        try {
+            String sql = "SELECT * FROM chess_player WHERE id = ?";
+            var pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, chessPlayerId);
+            var rs = pstmt.executeQuery();
+            if (rs.next()) {
+                ChessPlayer player = new ChessPlayer(
+                    rs.getString("id"),
+                    rs.getString("name"),
+                    rs.getString("nationality"),
+                    rs.getInt("birth_year"),
+                    rs.getString("fide_id"),
+                    rs.getInt("initial_elo")
+                );
+                rs.close();
+                pstmt.close();
                 return player;
             }
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
 
     public List<ChessPlayer> getAllChessPlayers() {
         List<ChessPlayer> players = new ArrayList<>();
-        players.add(new ChessPlayer("P1", "Alice", "USA", 1990, "ID001", 1500));
-        players.add(new ChessPlayer("P2", "Bob", "UK", 1985, "ID002", 1600));
-        players.add(new ChessPlayer("P3", "Charlie", "France", 1992, "ID003", 1700));
-        players.add(new ChessPlayer("P4", "David", "Germany", 1988, "ID004", 1800));
-        players.add(new ChessPlayer("P5", "Eve", "USA", 1995, "ID005", 1400));
+        try {
+            String sql = "SELECT * FROM chess_player";
+            var stmt = con.createStatement();
+            var rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                ChessPlayer player = new ChessPlayer(
+                    rs.getString("id"),
+                    rs.getString("name"),
+                    rs.getString("nationality"),
+                    rs.getInt("birth_year"),
+                    rs.getString("fide_id"),
+                    rs.getInt("initial_elo")
+                );
+                players.add(player);
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return players;
     }
 }

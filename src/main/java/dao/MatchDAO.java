@@ -10,18 +10,25 @@ public class MatchDAO extends DAO {
     }
 
     public Match getMatchById(String matchId) {
-        List<Match> matches = new ArrayList<>();
-        matches.add(new Match("M1", "R1", "2025-05-01"));
-        matches.add(new Match("M2", "R1", "2025-05-01"));
-        matches.add(new Match("M3", "R2", "2025-05-02"));
-        matches.add(new Match("M4", "R2", "2025-05-02"));
-        matches.add(new Match("M5", "R3", "2025-05-03"));
-        matches.add(new Match("M6", "R3", "2025-05-03"));
-
-        for (Match match : matches) {
-            if (match.getId().equals(matchId)) {
+        try {
+            String sql = "SELECT * FROM match WHERE id = ?";
+            var pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, matchId);
+            var rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Match match = new Match(
+                    rs.getString("id"),
+                    rs.getString("round_id"),
+                    rs.getString("date")
+                );
+                rs.close();
+                pstmt.close();
                 return match;
             }
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

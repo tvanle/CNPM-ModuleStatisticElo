@@ -13,53 +13,51 @@ public class MatchPlayerDAO extends DAO {
     }
 
     public List<Match> getMatches(String chessPlayerId, String tournamentId) {
-        List<MatchPlayer> matchPlayers = new ArrayList<>();
-        matchPlayers.add(new MatchPlayer("MP1", "M1", "P1", "Player1", 20, null, "W"));
-        matchPlayers.add(new MatchPlayer("MP2", "M1", "P2", "Player2", -20, null, "L"));
-        matchPlayers.add(new MatchPlayer("MP3", "M2", "P3", "Player1", 5, null, "D"));
-        matchPlayers.add(new MatchPlayer("MP4", "M2", "P4", "Player2", -5, null, "D"));
-        matchPlayers.add(new MatchPlayer("MP5", "M3", "P1", "Player1", -30, null, "L"));
-        matchPlayers.add(new MatchPlayer("MP6", "M3", "P3", "Player2", 30, null, "W"));
-        matchPlayers.add(new MatchPlayer("MP7", "M4", "P2", "Player1", 20, null, "W"));
-        matchPlayers.add(new MatchPlayer("MP8", "M4", "P4", "Player2", -20, null, "L"));
-        matchPlayers.add(new MatchPlayer("MP9", "M5", "P1", "Player1", 60, null, "D"));
-        matchPlayers.add(new MatchPlayer("MP10", "M5", "P4", "Player2", -5, null, "D"));
-        matchPlayers.add(new MatchPlayer("MP11", "M6", "P2", "Player1", -20, null, "L"));
-        matchPlayers.add(new MatchPlayer("MP12", "M6", "P3", "Player2", -15, null, "W"));
-
         List<Match> matches = new ArrayList<>();
-        MatchDAO matchDAO = new MatchDAO();
-        for (MatchPlayer mp : matchPlayers) {
-            if (mp.getChessPlayerId().equals(chessPlayerId)) {
-                Match match = matchDAO.getMatchById(mp.getMatchId());
-                if (match != null) {
-                    matches.add(match);
-                }
+        try {
+            String sql = "SELECT m.* FROM match_player mp JOIN match m ON mp.match_id = m.id WHERE mp.chess_player_id = ?";
+            var pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, chessPlayerId);
+            var rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Match match = new Match(
+                    rs.getString("id"),
+                    rs.getString("round_id"),
+                    rs.getString("date")
+                );
+                matches.add(match);
             }
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return matches;
     }
 
     public List<MatchPlayer> getMatchPlayersByMatch(String matchId) {
-        List<MatchPlayer> matchPlayers = new ArrayList<>();
-        matchPlayers.add(new MatchPlayer("MP1", "M1", "P1", "Player1", 20, null, "W"));
-        matchPlayers.add(new MatchPlayer("MP2", "M1", "P2", "Player2", -20, null, "L"));
-        matchPlayers.add(new MatchPlayer("MP3", "M2", "P3", "Player1", 5, null, "D"));
-        matchPlayers.add(new MatchPlayer("MP4", "M2", "P4", "Player2", -5, null, "D"));
-        matchPlayers.add(new MatchPlayer("MP5", "M3", "P1", "Player1", -30, null, "L"));
-        matchPlayers.add(new MatchPlayer("MP6", "M3", "P3", "Player2", 30, null, "W"));
-        matchPlayers.add(new MatchPlayer("MP7", "M4", "P2", "Player1", 20, null, "W"));
-        matchPlayers.add(new MatchPlayer("MP8", "M4", "P4", "Player2", -20, null, "L"));
-        matchPlayers.add(new MatchPlayer("MP9", "M5", "P1", "Player1", 60, null, "D"));
-        matchPlayers.add(new MatchPlayer("MP10", "M5", "P4", "Player2", -5, null, "D"));
-        matchPlayers.add(new MatchPlayer("MP11", "M6", "P2", "Player1", -20, null, "L"));
-        matchPlayers.add(new MatchPlayer("MP12", "M6", "P3", "Player2", -15, null, "W"));
-
         List<MatchPlayer> result = new ArrayList<>();
-        for (MatchPlayer mp : matchPlayers) {
-            if (matchId == null || mp.getMatchId().equals(matchId)) {
+        try {
+            String sql = matchId == null ? "SELECT * FROM match_player" : "SELECT * FROM match_player WHERE match_id = ?";
+            var pstmt = matchId == null ? con.prepareStatement(sql) : con.prepareStatement(sql);
+            if (matchId != null) pstmt.setString(1, matchId);
+            var rs = pstmt.executeQuery();
+            while (rs.next()) {
+                MatchPlayer mp = new MatchPlayer(
+                    rs.getString("id"),
+                    rs.getString("match_id"),
+                    rs.getString("chess_player_id"),
+                    rs.getString("role"),
+                    rs.getInt("elo_change"),
+                    rs.getString("note"),
+                    rs.getString("result")
+                );
                 result.add(mp);
             }
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }

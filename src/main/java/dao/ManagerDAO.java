@@ -8,9 +8,22 @@ public class ManagerDAO extends DAO {
     }
 
     public boolean checkLogin(Manager manager) {
-        if ("admin".equals(manager.getUsername()) && "123456".equals(manager.getPassword())) {
-            manager.setPosition("Administrator");
-            return true;
+        try {
+            String sql = "SELECT * FROM manager WHERE username = ? AND password = ?";
+            var pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, manager.getUsername());
+            pstmt.setString(2, manager.getPassword());
+            var rs = pstmt.executeQuery();
+            if (rs.next()) {
+                manager.setPosition(rs.getString("position"));
+                rs.close();
+                pstmt.close();
+                return true;
+            }
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
     }

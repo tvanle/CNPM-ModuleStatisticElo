@@ -11,36 +11,45 @@ public class RoundDAO extends DAO {
     }
 
     public Round getRoundById(String roundId) {
-        List<Round> rounds = new ArrayList<>();
-        // Dữ liệu giả lập các vòng đấu
-        rounds.add(new Round("R1", "T1", 1, "2025-05-01", "2025-05-01"));
-        rounds.add(new Round("R2", "T1", 2, "2025-05-02", "2025-05-02"));
-        rounds.add(new Round("R3", "T1", 3, "2025-05-03", "2025-05-03"));
-
-        // Dữ liệu giả lập các trận đấu
-        List<Match> matches = new ArrayList<>();
-        matches.add(new Match("M1", "R1", "2025-05-01"));
-        matches.add(new Match("M2", "R1", "2025-05-01"));
-        matches.add(new Match("M3", "R2", "2025-05-02"));
-        matches.add(new Match("M4", "R2", "2025-05-02"));
-        matches.add(new Match("M5", "R3", "2025-05-03"));
-        matches.add(new Match("M6", "R3", "2025-05-03"));
-
-        // Tìm vòng đấu theo ID
-        for (Round round : rounds) {
-            if (round.getId().equals(roundId)) {
-                // Thêm các trận đấu thuộc vòng đấu này vào listMatch
-                List<Match> roundMatches = new ArrayList<>();
-                for (Match match : matches) {
-                    if (match.getRoundId().equals(roundId)) {
-                        roundMatches.add(match);
-                    }
-                }
-                round.setListMatch(roundMatches);
-                return round;
+        Round round = null;
+        try {
+            String sql = "SELECT * FROM round WHERE id = ?";
+            var pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, roundId);
+            var rs = pstmt.executeQuery();
+            if (rs.next()) {
+                round = new Round(
+                    rs.getString("id"),
+                    rs.getString("tournament_id"),
+                    rs.getInt("round_num"),
+                    rs.getString("start_date"),
+                    rs.getString("end_date")
+                );
             }
+            rs.close();
+            pstmt.close();
+            if (round != null) {
+                List<Match> roundMatches = new ArrayList<>();
+                String sqlMatch = "SELECT * FROM match WHERE round_id = ?";
+                var pstmtMatch = con.prepareStatement(sqlMatch);
+                pstmtMatch.setString(1, roundId);
+                var rsMatch = pstmtMatch.executeQuery();
+                while (rsMatch.next()) {
+                    Match match = new Match(
+                        rsMatch.getString("id"),
+                        rsMatch.getString("round_id"),
+                        rsMatch.getString("date")
+                    );
+                    roundMatches.add(match);
+                }
+                rsMatch.close();
+                pstmtMatch.close();
+                round.setListMatch(roundMatches);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return null;
+        return round;
     }
 
     

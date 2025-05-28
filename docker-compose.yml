@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    container_name: chess_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Cnpm@2020?
+      MYSQL_DATABASE: chess
+      MYSQL_USER: chessuser
+      MYSQL_PASSWORD: chesspass
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
