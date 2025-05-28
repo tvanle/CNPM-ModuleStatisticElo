@@ -12,7 +12,7 @@ public class ChessPlayerDAO extends DAO {
     public List<ChessPlayer> getChessPlayersByTournament(String tournamentId) {
         List<ChessPlayer> players = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM chess_player WHERE tournament_id = ?";
+            String sql = "SELECT * FROM ChessPlayer WHERE tournament_id = ?";
             var pstmt = con.prepareStatement(sql);
             pstmt.setString(1, tournamentId);
             var rs = pstmt.executeQuery();
@@ -37,7 +37,7 @@ public class ChessPlayerDAO extends DAO {
 
     public ChessPlayer getChessPlayerById(String chessPlayerId) {
         try {
-            String sql = "SELECT * FROM chess_player WHERE id = ?";
+            String sql = "SELECT * FROM ChessPlayer WHERE id = ?";
             var pstmt = con.prepareStatement(sql);
             pstmt.setString(1, chessPlayerId);
             var rs = pstmt.executeQuery();
@@ -65,7 +65,7 @@ public class ChessPlayerDAO extends DAO {
     public List<ChessPlayer> getAllChessPlayers() {
         List<ChessPlayer> players = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM chess_player";
+            String sql = "SELECT * FROM ChessPlayer";
             var stmt = con.createStatement();
             var rs = stmt.executeQuery(sql);
             while (rs.next()) {

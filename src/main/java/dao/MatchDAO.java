@@ -11,7 +11,7 @@ public class MatchDAO extends DAO {
 
     public Match getMatchById(String matchId) {
         try {
-            String sql = "SELECT * FROM match WHERE id = ?";
+            String sql = "SELECT * FROM Match WHERE id = ?";
             var pstmt = con.prepareStatement(sql);
             pstmt.setString(1, matchId);
             var rs = pstmt.executeQuery();

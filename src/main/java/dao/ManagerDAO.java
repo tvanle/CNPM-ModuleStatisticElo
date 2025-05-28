@@ -9,7 +9,7 @@ public class ManagerDAO extends DAO {
 
     public boolean checkLogin(Manager manager) {
         try {
-            String sql = "SELECT * FROM manager WHERE username = ? AND password = ?";
+            String sql = "SELECT * FROM Manager WHERE username = ? AND password = ?";
             var pstmt = con.prepareStatement(sql);
             pstmt.setString(1, manager.getUsername());
             pstmt.setString(2, manager.getPassword());

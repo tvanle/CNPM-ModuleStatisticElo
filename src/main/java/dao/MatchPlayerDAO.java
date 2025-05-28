@@ -15,7 +15,7 @@ public class MatchPlayerDAO extends DAO {
     public List<Match> getMatches(String chessPlayerId, String tournamentId) {
         List<Match> matches = new ArrayList<>();
         try {
-            String sql = "SELECT m.* FROM match_player mp JOIN match m ON mp.match_id = m.id WHERE mp.chess_player_id = ?";
+            String sql = "SELECT m.* FROM MatchPlayer mp JOIN Match m ON mp.match_id = m.id WHERE mp.chess_player_id = ?";
             var pstmt = con.prepareStatement(sql);
             pstmt.setString(1, chessPlayerId);
             var rs = pstmt.executeQuery();
@@ -38,7 +38,7 @@ public class MatchPlayerDAO extends DAO {
     public List<MatchPlayer> getMatchPlayersByMatch(String matchId) {
         List<MatchPlayer> result = new ArrayList<>();
         try {
-            String sql = matchId == null ? "SELECT * FROM match_player" : "SELECT * FROM match_player WHERE match_id = ?";
+            String sql = matchId == null ? "SELECT * FROM MatchPlayer" : "SELECT * FROM MatchPlayer WHERE match_id = ?";
             var pstmt = matchId == null ? con.prepareStatement(sql) : con.prepareStatement(sql);
             if (matchId != null) pstmt.setString(1, matchId);
             var rs = pstmt.executeQuery();

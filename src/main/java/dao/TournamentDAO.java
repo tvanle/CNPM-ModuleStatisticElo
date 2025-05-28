@@ -12,7 +12,7 @@ public class TournamentDAO extends DAO {
     public List<Tournament> getAllTournaments() {
         List<Tournament> tournaments = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM tournament";
+            String sql = "SELECT * FROM Tournament";
             var stmt = con.createStatement();
             var rs = stmt.executeQuery(sql);
             while (rs.next()) {
