@@ -47,9 +47,7 @@ public class MatchPlayerDAO extends DAO {
                     rs.getString("id"),
                     rs.getString("matchId"),
                     rs.getString("chessPlayerId"),
-                    rs.getString("role"),
                     rs.getInt("eloChange"),
-                    rs.getString("note"),
                     rs.getString("result")
                 );
                 result.add(mp);
@@ -85,3 +83,4 @@ public class MatchPlayerDAO extends DAO {
         return matches;
     }
 }
+

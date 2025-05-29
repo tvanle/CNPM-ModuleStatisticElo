@@ -11,8 +11,7 @@ public class Manager implements Serializable {
         super();
     }
 
-    public Manager(String id, String username, String password) {
-        this.id = id;
+    public Manager(String username, String password) {
         this.username = username;
         this.password = password;
     }

@@ -6,9 +6,7 @@ public class MatchPlayer implements Serializable {
     private String id;
     private String matchId;
     private String chessPlayerId;
-    private String role;
     private int eloChange;
-    private String note;
     private String result;
     private String opponentName; // Added field
 
@@ -16,21 +14,15 @@ public class MatchPlayer implements Serializable {
         super();
     }
 
-    public MatchPlayer(String id, String matchId, String chessPlayerId, String role, int eloChange) {
-        this(id, matchId, chessPlayerId, role, eloChange, null, null);
+    public MatchPlayer(String id, String matchId, String chessPlayerId, int eloChange) {
+        this(id, matchId, chessPlayerId, eloChange, null);
     }
 
-    public MatchPlayer(String id, String matchId, String chessPlayerId, String role, int eloChange, String note) {
-        this(id, matchId, chessPlayerId, role, eloChange, note, null);
-    }
-
-    public MatchPlayer(String id, String matchId, String chessPlayerId, String role, int eloChange, String note, String result) {
+    public MatchPlayer(String id, String matchId, String chessPlayerId, int eloChange, String result) {
         this.id = id;
         this.matchId = matchId;
         this.chessPlayerId = chessPlayerId;
-        this.role = role;
         this.eloChange = eloChange;
-        this.note = note;
         this.result = result;
     }
 
@@ -58,28 +50,12 @@ public class MatchPlayer implements Serializable {
         this.chessPlayerId = chessPlayerId;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
     public int getEloChange() {
         return eloChange;
     }
 
     public void setEloChange(int eloChange) {
         this.eloChange = eloChange;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
     }
 
     public String getResult() {
@@ -99,3 +75,4 @@ public class MatchPlayer implements Serializable {
         this.opponentName = opponentName;
     }
 }
+

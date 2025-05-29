@@ -83,7 +83,7 @@ public class LoginView extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String username = inUsername.getText();
                 String password = new String(inPassword.getPassword());
-                Manager manager = new Manager("", username, password, "", 0.0f);
+                Manager manager = new Manager(username, password);
                 ManagerDAO managerDAO = new ManagerDAO();
                 boolean loginSuccess = managerDAO.checkLogin(manager);
                 if (loginSuccess) {
