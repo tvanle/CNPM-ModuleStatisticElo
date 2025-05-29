@@ -17,6 +17,8 @@ import model.ChessPlayer;
 import model.Match;
 import model.MatchPlayer;
 import model.Round;
+import view.stats.EloStatsView;
+import view.stats.MatchesListView;
 
 public class MatchDetailView extends JFrame {
     private String      matchId;
@@ -54,11 +56,11 @@ public class MatchDetailView extends JFrame {
         }
 
         setTitle("Chess Match Details");
-        setSize(900, 650);
+        setSize(900, 750); // Increased height for better content display
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setUndecorated(true); // Remove default window frame
-        setShape(new java.awt.geom.RoundRectangle2D.Double(0, 0, 900, 650, 20, 20)); // Round corners
+        setShape(new java.awt.geom.RoundRectangle2D.Double(0, 0, 900, 750, 20, 20)); // Round corners
 
         // Set custom look and feel
         try {
@@ -90,16 +92,24 @@ public class MatchDetailView extends JFrame {
         contentPanel.setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(30, 40, 30, 40));
 
-        // Create match info panel
+        // Create match info panel with scroll support
         matchInfoPanel = new JPanel();
         matchInfoPanel.setLayout(new BoxLayout(matchInfoPanel, BoxLayout.Y_AXIS));
         matchInfoPanel.setOpaque(false);
 
+        // Add the panel to a scroll pane for better viewing
+        JScrollPane scrollPane = new JScrollPane(matchInfoPanel);
+        scrollPane.setBorder(null);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        // Set scrolling speed
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
         // Create navigation panel
         JPanel navigationPanel = createNavigationPanel();
 
-        // Add panels to content panel
-        contentPanel.add(matchInfoPanel, BorderLayout.CENTER);
+        // Add panels to content panel with scroll support
+        contentPanel.add(scrollPane, BorderLayout.CENTER); // Use scrollPane instead of matchInfoPanel directly
         contentPanel.add(navigationPanel, BorderLayout.SOUTH);
 
         // Add panels to main panel
@@ -147,7 +157,7 @@ public class MatchDetailView extends JFrame {
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
         };
-        headerPanel.setPreferredSize(new Dimension(900, 100));
+        headerPanel.setPreferredSize(new Dimension(900, 110)); // Slightly taller header
 
         // Window control buttons (close)
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -183,7 +193,7 @@ public class MatchDetailView extends JFrame {
         JPanel textContainer = new JPanel();
         textContainer.setLayout(new BoxLayout(textContainer, BoxLayout.Y_AXIS));
         textContainer.setOpaque(false);
-        textContainer.setBorder(new EmptyBorder(15, 20, 15, 20));
+        textContainer.setBorder(new EmptyBorder(15, 0, 15, 0)); // Remove horizontal padding for better centering
 
         JLabel titleLabel = new JLabel("Chess Match Details");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
@@ -234,8 +244,8 @@ public class MatchDetailView extends JFrame {
         navigationPanel.setOpaque(false);
         navigationPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
 
-        // Back button
-        backButton = new JButton("⬅️ Back to Matches");
+        // Back button - renamed to Stats button
+        backButton = new JButton("📊 Back to Stats");
         styleButton(backButton, SECONDARY_COLOR, Color.WHITE);
 
         // Home button
@@ -247,7 +257,12 @@ public class MatchDetailView extends JFrame {
         navigationPanel.add(homeButton);
 
         // Add action listeners
-        backButton.addActionListener(e -> dispose());
+        backButton.addActionListener(e -> {
+            dispose();
+            // Go directly to EloStatsView
+            new EloStatsView().setVisible(true);
+        });
+
         homeButton.addActionListener(e -> {
             dispose();
             new view.user.HomeView().setVisible(true);
@@ -312,8 +327,8 @@ public class MatchDetailView extends JFrame {
         String      nationality = player != null ? player.getNationality() : "Unknown";
 
         // Determine result and corresponding color/icon
-        String resultText      = "UNKNOWN";
-        String resultIcon      = "❓";
+        String resultText      = "";
+        String resultIcon      = "";
         Color  resultColor     = Color.GRAY;
         Color  cardBorderColor = new Color(200, 200, 200);
 
@@ -363,52 +378,37 @@ public class MatchDetailView extends JFrame {
         card.setLayout(new BorderLayout());
         card.setBackground(Color.WHITE);
         card.setBorder(new CompoundBorder(
-                new LineBorder(cardBorderColor, 2, true),
-                new EmptyBorder(15, 15, 15, 15)
+                new LineBorder(cardBorderColor, 1, true),
+                new EmptyBorder(8, 8, 8, 8)
         ));
+        // Set preferred size to limit width
+        card.setPreferredSize(new Dimension(220, 130));
 
-        // Top section with player name and result banner
+        // Top section with player name only (no result banner)
         JPanel topSection = new JPanel(new BorderLayout());
         topSection.setOpaque(false);
 
         // Player name with icon
-        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
         namePanel.setOpaque(false);
 
         JLabel playerIcon = new JLabel("👤");
-        playerIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 24));
+        playerIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 16));
 
         JLabel nameLabel = new JLabel(playerName);
-        nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         nameLabel.setForeground(PRIMARY_COLOR);
 
         namePanel.add(playerIcon);
         namePanel.add(nameLabel);
 
-        // Result banner
-        JPanel resultPanel = new JPanel();
-        resultPanel.setBackground(resultColor);
-        resultPanel.setBorder(new EmptyBorder(5, 10, 5, 10));
-
-        JLabel resultIconLabel = new JLabel(resultIcon);
-        resultIconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 18));
-        resultIconLabel.setForeground(Color.WHITE);
-
-        JLabel resultTextLabel = new JLabel(" " + resultText);
-        resultTextLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        resultTextLabel.setForeground(Color.WHITE);
-
-        resultPanel.add(resultIconLabel);
-        resultPanel.add(resultTextLabel);
-
         topSection.add(namePanel, BorderLayout.CENTER);
-        topSection.add(resultPanel, BorderLayout.EAST);
 
         // Center section with player details
         JPanel centerSection = new JPanel();
         centerSection.setLayout(new BoxLayout(centerSection, BoxLayout.Y_AXIS));
         centerSection.setOpaque(false);
-        centerSection.setBorder(new EmptyBorder(15, 0, 0, 0));
+        centerSection.setBorder(new EmptyBorder(5, 0, 0, 0));
 
         // Player ID
         JPanel idRow = createPlayerInfoRow("ID", playerId, null);
@@ -417,25 +417,37 @@ public class MatchDetailView extends JFrame {
         String flagEmoji      = "🌍"; // Default world flag
         JPanel nationalityRow = createPlayerInfoRow("Nationality", nationality, flagEmoji);
 
-        // Elo change with color
-        JPanel eloChangeRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 5));
+        // Elo change with simplified styling
+        JPanel eloChangeRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 3));
         eloChangeRow.setOpaque(false);
 
-        JLabel eloLabel = new JLabel("Elo Change: ");
-        eloLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        JLabel eloLabel = new JLabel("Elo: ");
+        eloLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
-        JLabel eloValueLabel = new JLabel(eloChangeIcon + " " + eloChangeText);
-        eloValueLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        // Create simple Elo change display
+        int eloChangeValue = matchPlayer.getEloChange();
+        if (eloChangeValue > 0) {
+            eloChangeIcon = "↑";
+            eloChangeColor = WIN_COLOR;
+        } else if (eloChangeValue < 0) {
+            eloChangeIcon = "↓";
+            eloChangeColor = LOSS_COLOR;
+        } else {
+            eloChangeIcon = "―";
+        }
+
+        JLabel eloValueLabel = new JLabel(eloChangeIcon + " " + eloChangeValue);
+        eloValueLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         eloValueLabel.setForeground(eloChangeColor);
 
         eloChangeRow.add(eloLabel);
         eloChangeRow.add(eloValueLabel);
 
-        // Add rows to center section
+        // Add rows to center section with minimal spacing
         centerSection.add(idRow);
-        centerSection.add(Box.createRigidArea(new Dimension(0, 8)));
+        centerSection.add(Box.createRigidArea(new Dimension(0, 3)));
         centerSection.add(nationalityRow);
-        centerSection.add(Box.createRigidArea(new Dimension(0, 8)));
+        centerSection.add(Box.createRigidArea(new Dimension(0, 3)));
         centerSection.add(eloChangeRow);
 
         // Add sections to card
@@ -447,20 +459,20 @@ public class MatchDetailView extends JFrame {
 
     // Helper to create info row for player card
     private JPanel createPlayerInfoRow(String label, String value, String emoji) {
-        JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 5));
+        JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 2));
         row.setOpaque(false);
 
         JLabel labelComponent = new JLabel(label + ": ");
-        labelComponent.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        labelComponent.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         if (emoji != null) {
             JLabel emojiLabel = new JLabel(emoji + " ");
-            emojiLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 16));
+            emojiLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 12));
             row.add(emojiLabel);
         }
 
         JLabel valueComponent = new JLabel(value);
-        valueComponent.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        valueComponent.setFont(new Font("Segoe UI", Font.BOLD, 12));
 
         row.add(labelComponent);
         row.add(valueComponent);
@@ -529,7 +541,6 @@ public class MatchDetailView extends JFrame {
         matchInfoCard.add(createDetailItem("🆔", "Match ID", match.getId()));
         matchInfoCard.add(createDetailItem("📅", "Date", formattedDate));
         matchInfoCard.add(createDetailItem("🔄", "Round", round != null ? "Round " + round.getRoundNum() : "N/A"));
-        matchInfoCard.add(createDetailItem("🏆", "Tournament", round != null ? round.getTournamentId() : "N/A"));
 
         overviewPanel.add(matchInfoCard);
         matchInfoPanel.add(overviewPanel);
@@ -564,14 +575,14 @@ public class MatchDetailView extends JFrame {
             }
             vsLabel.setText(vsText);
 
-            // Create players title
+            // Create players title with more spacing
             JLabel playersLabel = new JLabel("Players");
             playersLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
             playersLabel.setForeground(PRIMARY_COLOR);
             playersLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            matchInfoPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+            matchInfoPanel.add(Box.createRigidArea(new Dimension(0, 25))); // Increased spacing
             matchInfoPanel.add(playersLabel);
-            matchInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            matchInfoPanel.add(Box.createRigidArea(new Dimension(0, 15))); // Increased spacing
 
             // Create a panel for both players with VS label in center
             JPanel playersPanel = new JPanel(new BorderLayout(20, 0));
@@ -607,11 +618,11 @@ public class MatchDetailView extends JFrame {
             // VS label in center
             JPanel vsPanel = new JPanel();
             vsPanel.setOpaque(false);
-            vsPanel.setPreferredSize(new Dimension(80, 80));
+            vsPanel.setPreferredSize(new Dimension(40, 40));
             vsPanel.setLayout(new GridBagLayout());
 
             JLabel vsSymbol = new JLabel("VS");
-            vsSymbol.setFont(new Font("Segoe UI", Font.BOLD, 28));
+            vsSymbol.setFont(new Font("Segoe UI", Font.BOLD, 16));
             vsSymbol.setForeground(ACCENT_COLOR);
             vsPanel.add(vsSymbol);
 
@@ -621,85 +632,6 @@ public class MatchDetailView extends JFrame {
             playersPanel.add(opponentPanel, BorderLayout.EAST);
 
             matchInfoPanel.add(playersPanel);
-
-            // Match result banner
-            JPanel resultBannerPanel = new JPanel(new BorderLayout());
-            resultBannerPanel.setOpaque(false);
-            resultBannerPanel.setBorder(new EmptyBorder(25, 0, 15, 0));
-            resultBannerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-            // Determine result
-            String currentResult = currentMatchPlayer.getResult();
-            String resultText    = "MATCH RESULT UNKNOWN";
-            String resultEmoji   = "❓";
-            Color  resultColor   = Color.GRAY;
-
-            if ("W".equals(currentResult)) {
-                resultText = (player != null ? "YOU" : currentMatchPlayer.getPlayerName()) + " WON THE MATCH";
-                resultEmoji = "🏆";
-                resultColor = WIN_COLOR;
-            } else if ("L".equals(currentResult)) {
-                resultText = opponentMatchPlayer.getPlayerName() + " WON THE MATCH";
-                resultEmoji = "🏆";
-                resultColor = LOSS_COLOR;
-            } else if ("D".equals(currentResult)) {
-                resultText = "MATCH ENDED IN A DRAW";
-                resultEmoji = "🤝";
-                resultColor = DRAW_COLOR;
-            }
-
-            // Create banner
-            JPanel bannerPanel = new JPanel();
-            bannerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-            bannerPanel.setBackground(resultColor);
-            bannerPanel.setBorder(new EmptyBorder(12, 20, 12, 20));
-
-            JLabel emojiLabel = new JLabel(resultEmoji);
-            emojiLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 24));
-            emojiLabel.setForeground(Color.WHITE);
-
-            JLabel resultTextLabel = new JLabel(" " + resultText + " ");
-            resultTextLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
-            resultTextLabel.setForeground(Color.WHITE);
-
-            bannerPanel.add(emojiLabel);
-            bannerPanel.add(resultTextLabel);
-
-            resultBannerPanel.add(bannerPanel, BorderLayout.CENTER);
-            matchInfoPanel.add(resultBannerPanel);
-
-            // Add game statistics section
-            JLabel statsLabel = new JLabel("Match Statistics");
-            statsLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-            statsLabel.setForeground(PRIMARY_COLOR);
-            statsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            matchInfoPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-            matchInfoPanel.add(statsLabel);
-            matchInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-            // Create statistics panel
-            JPanel statsPanel = new JPanel();
-            statsPanel.setLayout(new GridLayout(1, 2, 15, 0));
-            statsPanel.setOpaque(false);
-            statsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-            // Elo impact card
-            String player1Label = player != null ? "You" : currentMatchPlayer.getPlayerName();
-            JPanel eloImpactCard = createStatCard("Elo Impact",
-                    player1Label + ": " + (currentMatchPlayer.getEloChange() > 0 ? "+" : "") + currentMatchPlayer.getEloChange(),
-                    opponentMatchPlayer.getPlayerName() + ": " + (opponentMatchPlayer.getEloChange() > 0 ? "+" : "") + opponentMatchPlayer.getEloChange(),
-                    "📊");
-
-            // Match duration card (placeholder - could be real data in a real app)
-            JPanel matchDateCard = createStatCard("Match Date",
-                    "Date: " + formattedDate,
-                    "Time: 15:00", // Placeholder
-                    "🕒");
-
-            statsPanel.add(eloImpactCard);
-            statsPanel.add(matchDateCard);
-
-            matchInfoPanel.add(statsPanel);
         } else {
             // Error message for missing player data
             JPanel errorPanel = new JPanel(new BorderLayout());
@@ -746,46 +678,4 @@ public class MatchDetailView extends JFrame {
         return item;
     }
 
-    // Helper method to create statistic card
-    private JPanel createStatCard(String title, String stat1, String stat2, String emoji) {
-        JPanel card = new JPanel();
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setBackground(Color.WHITE);
-        card.setBorder(new CompoundBorder(
-                new LineBorder(new Color(230, 230, 240), 1, true),
-                new EmptyBorder(15, 15, 15, 15)
-        ));
-
-        // Title with icon
-        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        titlePanel.setOpaque(false);
-
-        JLabel iconLabel = new JLabel(emoji);
-        iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 18));
-
-        JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        titleLabel.setForeground(PRIMARY_COLOR);
-
-        titlePanel.add(iconLabel);
-        titlePanel.add(titleLabel);
-        titlePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Stats
-        JLabel stat1Label = new JLabel(stat1);
-        stat1Label.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        stat1Label.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel stat2Label = new JLabel(stat2);
-        stat2Label.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        stat2Label.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        card.add(titlePanel);
-        card.add(Box.createRigidArea(new Dimension(0, 10)));
-        card.add(stat1Label);
-        card.add(Box.createRigidArea(new Dimension(0, 5)));
-        card.add(stat2Label);
-
-        return card;
-    }
 }
