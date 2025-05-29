@@ -325,7 +325,7 @@ public class EloStatsView extends JFrame {
         });
 
         // Xử lý sự kiện nút "Export Stats"
-        subExportStats.addActionListener(new ActiaonListener() {
+        subExportStats.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (currentPlayers == null || currentPlayers.isEmpty()) {
