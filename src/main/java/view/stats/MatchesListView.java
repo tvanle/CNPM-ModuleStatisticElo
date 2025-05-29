@@ -1,6 +1,10 @@
 package view.stats;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +19,7 @@ public class MatchesListView extends JFrame {
     private JTable outsubListMatches;
     private JButton subViewMatchDetail;
     private JButton subBackToEloStats;
+    private JLabel playerInfoLabel;
 
     public MatchesListView() {
         setTitle("Matches List - Player");
@@ -31,12 +36,30 @@ public class MatchesListView extends JFrame {
         JLabel titleLabel = new JLabel("Matches for Player", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         titleLabel.setForeground(new Color(0, 102, 204));
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
+
+        // Player info label below title
+        playerInfoLabel = new JLabel("", JLabel.CENTER);
+        playerInfoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        playerInfoLabel.setForeground(new Color(60, 60, 60));
+        playerInfoLabel.setBorder(new EmptyBorder(5, 0, 10, 0));
+
+        // Add title and player info to a panel
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setOpaque(false);
+        headerPanel.add(titleLabel, BorderLayout.NORTH);
+        headerPanel.add(playerInfoLabel, BorderLayout.CENTER);
+
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
 
         // Bảng hiển thị danh sách trận đấu
-        String[] columnNames = {"ID", "Date", "Result", "Round Number"};
-        Object[][] data = {};
-        outsubListMatches = new JTable(data, columnNames);
+        String[] columnNames = {"ID", "Date", "Result", "Round Number", "Tournament"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make table non-editable
+            }
+        };
+        outsubListMatches = new JTable(tableModel);
         outsubListMatches.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane tableScrollPane = new JScrollPane(outsubListMatches);
         mainPanel.add(tableScrollPane, BorderLayout.CENTER);
@@ -85,33 +108,91 @@ public class MatchesListView extends JFrame {
         });
     }
 
-    // Tải danh sách trận đấu
+    // Style button helper method
+    private void styleButton(JButton button, Color bgColor, Color fgColor) {
+        button.setBackground(bgColor);
+        button.setForeground(fgColor);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setPreferredSize(new Dimension(180, 45));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Add hover effect
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+    }
+
+    // Show styled warning dialog
+    private void showWarningDialog(String message) {
+        JOptionPane optionPane = new JOptionPane(
+            message,
+            JOptionPane.WARNING_MESSAGE
+        );
+        JDialog dialog = optionPane.createDialog(this, "Warning");
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    // Tải danh sách trận đấu with enhanced data display
     private void loadMatches(String chessPlayerId, String tournamentId) {
         MatchPlayerDAO matchPlayerDAO = new MatchPlayerDAO();
         List<Match> matches = matchPlayerDAO.getMatches(chessPlayerId, tournamentId);
         List<MatchPlayer> matchPlayers = matchPlayerDAO.getMatchPlayersByMatch(null);
 
-        String[] columnNames = {"ID", "Date", "Result", "Round Number"};
-        Object[][] data = new Object[matches.size()][4];
+        // Set player info
+        playerInfoLabel.setText("Player ID: " + chessPlayerId + " | Tournament ID: " + tournamentId + " | Total Matches: " + matches.size());
+
+        DefaultTableModel model = (DefaultTableModel) outsubListMatches.getModel();
+        model.setRowCount(0); // Clear existing rows
+
         RoundDAO roundDAO = new RoundDAO();
-        for (int i = 0; i < matches.size(); i++) {
-            Match match = matches.get(i);
+        int wins = 0, losses = 0, draws = 0;
+
+        for (Match match : matches) {
             Round round = roundDAO.getRoundById(match.getRoundId());
 
-            // Tìm MatchPlayer tương ứng với kỳ thủ trong trận đấu
+            // Find the player's result in this match
             String result = "N/A";
             for (MatchPlayer mp : matchPlayers) {
                 if (mp.getMatchId().equals(match.getId()) && mp.getChessPlayerId().equals(chessPlayerId)) {
                     result = mp.getResult();
+
+                    // Count results for statistics
+                    if ("W".equals(result)) wins++;
+                    else if ("L".equals(result)) losses++;
+                    else if ("D".equals(result)) draws++;
+
                     break;
                 }
             }
 
-            data[i][0] = match.getId();
-            data[i][1] = match.getDate();
-            data[i][2] = result;
-            data[i][3] = round != null ? round.getRoundNum() : "N/A";
+            // Tournament name would typically come from the round's tournament
+            String tournamentName = round != null ? "Tournament " + tournamentId : "Unknown";
+
+            // Format date better (assuming it's in YYYY-MM-DD format)
+            String formattedDate = match.getDate();
+
+            model.addRow(new Object[]{
+                match.getId(),
+                formattedDate,
+                result,
+                round != null ? "Round " + round.getRoundNum() : "N/A",
+                tournamentName
+            });
         }
-        outsubListMatches.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
+
+        // Update player info label with statistics
+        playerInfoLabel.setText(String.format(
+            "<html>Player ID: <b>%s</b> | Total Matches: <b>%d</b> | Record: <font color='green'><b>%d W</b></font> - <font color='red'><b>%d L</b></font> - <font color='#DAA520'><b>%d D</b></font></html>",
+            chessPlayerId, matches.size(), wins, losses, draws
+        ));
     }
 }
