@@ -7,11 +7,8 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 import dao.ChessPlayerDAO;
-import dao.MatchDAO;
-import dao.MatchPlayerDAO;
 import dao.RoundDAO;
 import model.ChessPlayer;
 import model.Match;
@@ -19,6 +16,9 @@ import model.MatchPlayer;
 import model.Round;
 
 public class MatchDetailView extends JFrame {
+    private String matchId;
+    private Match matchData;
+    private List<MatchPlayer> matchPlayers;
     private JLabel outsubMatchInfo;
     private JButton subBackToMatches;
     private JPanel matchInfoPanel;
@@ -31,6 +31,15 @@ public class MatchDetailView extends JFrame {
     private final Color DRAW_COLOR = new Color(218, 165, 32); // Goldenrod
 
     public MatchDetailView() {
+            this(null, null);
+        }
+
+        public MatchDetailView(Match matchData, List<MatchPlayer> matchPlayers) {
+            this.matchData = matchData;
+            this.matchPlayers = matchPlayers;
+            if (matchData != null) {
+                this.matchId = matchData.getId();
+            }
         setTitle("Match Detail");
         setSize(400, 200);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -57,9 +66,8 @@ public class MatchDetailView extends JFrame {
         matchInfoPanel.setLayout(new BoxLayout(matchInfoPanel, BoxLayout.Y_AXIS));
         matchInfoPanel.setOpaque(false);
 
-        // Hiển thị thông tin trận đấu (giả lập cho match M1)
-        String matchId = "M1"; // Giả lập chọn trận M1
-        loadMatchDetails(matchId);
+        // Hiển thị thông tin trận đấu using the match data passed to constructor
+        loadMatchDetails();
 
         gbc.gridy = 1;
         mainPanel.add(matchInfoPanel, gbc);
@@ -79,7 +87,6 @@ public class MatchDetailView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new MatchesListView().setVisible(true);
             }
         });
     }
@@ -244,12 +251,12 @@ public class MatchDetailView extends JFrame {
     }
 
     // Tải chi tiết trận đấu
-    private void loadMatchDetails(String matchId) {
+    private void loadMatchDetails() {
         // Clear existing content
         matchInfoPanel.removeAll();
 
-        MatchDAO matchDAO = new MatchDAO();
-        Match match = matchDAO.getMatchById(matchId);
+        // Use the matchData object passed to the constructor instead of querying the database
+        Match match = this.matchData;
 
         if (match == null) {
             JLabel errorLabel = new JLabel("Match not found!", JLabel.CENTER);
@@ -261,9 +268,8 @@ public class MatchDetailView extends JFrame {
             return;
         }
 
-        // Get related data
-        MatchPlayerDAO matchPlayerDAO = new MatchPlayerDAO();
-        List<MatchPlayer> matchPlayers = matchPlayerDAO.getMatchPlayersByMatch(matchId);
+        // Use matchPlayers from constructor instead of querying database
+        List<MatchPlayer> matchPlayers = this.matchPlayers;
         ChessPlayerDAO chessPlayerDAO = new ChessPlayerDAO();
         RoundDAO roundDAO = new RoundDAO();
         Round round = roundDAO.getRoundById(match.getRoundId());

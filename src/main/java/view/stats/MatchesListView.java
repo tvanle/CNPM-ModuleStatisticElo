@@ -8,6 +8,7 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import dao.MatchPlayerDAO;
 import dao.RoundDAO;
@@ -20,8 +21,16 @@ public class MatchesListView extends JFrame {
     private JButton subViewMatchDetail;
     private JButton subBackToEloStats;
     private JLabel playerInfoLabel;
+    private String playerId;
+    private String tournamentId;
 
-    public MatchesListView() {
+    // Cache data to avoid unnecessary database queries
+    private List<Match> cachedMatches;
+    private List<MatchPlayer> cachedMatchPlayers;
+
+    public MatchesListView(String playerId, String tournamentId) {
+        this.playerId = playerId;
+        this.tournamentId = tournamentId;
         setTitle("Matches List - Player");
         setSize(700, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -81,8 +90,8 @@ public class MatchesListView extends JFrame {
         // Thêm panel vào frame
         add(mainPanel);
 
-        // Tải danh sách trận đấu (giả lập kỳ thủ P1, giải đấu T1)
-        loadMatches("P1", "T1");
+        // Tải danh sách trận đấu với player ID đã chọn
+        loadMatches(playerId, tournamentId);
 
         // Xử lý sự kiện nút "View Match Detail"
         subViewMatchDetail.addActionListener(new ActionListener() {
@@ -90,8 +99,29 @@ public class MatchesListView extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = outsubListMatches.getSelectedRow();
                 if (selectedRow >= 0) {
+                    // Get the selected match ID
+                    String matchId = (String) outsubListMatches.getValueAt(selectedRow, 0);
+
+                    // Find the match in our cached data instead of querying again
+                    Match selectedMatch = null;
+                    for (Match match : cachedMatches) {
+                        if (match.getId().equals(matchId)) {
+                            selectedMatch = match;
+                            break;
+                        }
+                    }
+
+                    // Get relevant match players
+                    List<MatchPlayer> relevantPlayers = new ArrayList<>();
+                    for (MatchPlayer mp : cachedMatchPlayers) {
+                        if (mp.getMatchId().equals(matchId)) {
+                            relevantPlayers.add(mp);
+                        }
+                    }
+
                     dispose();
-                    new MatchDetailView().setVisible(true);
+                    // Pass the Match object and relevant players to MatchDetailView
+                    new MatchDetailView(selectedMatch, relevantPlayers).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select a match!", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
@@ -103,7 +133,15 @@ public class MatchesListView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new EloStatsView().setVisible(true);
+                EloStatsView eloStatsView = new EloStatsView();
+                eloStatsView.setVisible(true);
+
+                // Set the tournament dropdown to the correct tournament
+                if ("T2".equals(tournamentId)) {
+                    eloStatsView.selectTournament("European Chess Open 2025");
+                } else {
+                    eloStatsView.selectTournament("World Chess Championship 2025");
+                }
             }
         });
     }
@@ -144,8 +182,13 @@ public class MatchesListView extends JFrame {
     // Tải danh sách trận đấu with enhanced data display
     private void loadMatches(String chessPlayerId, String tournamentId) {
         MatchPlayerDAO matchPlayerDAO = new MatchPlayerDAO();
-        List<Match> matches = matchPlayerDAO.getMatches(chessPlayerId, tournamentId);
-        List<MatchPlayer> matchPlayers = matchPlayerDAO.getMatchPlayersByMatch(null);
+        // Cache the match data
+        this.cachedMatches = matchPlayerDAO.getMatches(chessPlayerId, tournamentId);
+        this.cachedMatchPlayers = matchPlayerDAO.getMatchPlayersByMatch(null);
+
+        // Use the cached data for the rest of the method
+        List<Match> matches = this.cachedMatches;
+        List<MatchPlayer> matchPlayers = this.cachedMatchPlayers;
 
         // Set player info
         playerInfoLabel.setText("Player ID: " + chessPlayerId + " | Tournament ID: " + tournamentId + " | Total Matches: " + matches.size());
@@ -153,11 +196,24 @@ public class MatchesListView extends JFrame {
         DefaultTableModel model = (DefaultTableModel) outsubListMatches.getModel();
         model.setRowCount(0); // Clear existing rows
 
+        // Pre-load all needed rounds to avoid multiple database queries
         RoundDAO roundDAO = new RoundDAO();
+        // Create a map of roundId -> Round to avoid querying the same round multiple times
+        java.util.Map<String, Round> roundCache = new java.util.HashMap<>();
+        for (Match match : matches) {
+            if (match.getRoundId() != null && !roundCache.containsKey(match.getRoundId())) {
+                Round round = roundDAO.getRoundById(match.getRoundId());
+                if (round != null) {
+                    roundCache.put(match.getRoundId(), round);
+                }
+            }
+        }
+
         int wins = 0, losses = 0, draws = 0;
 
         for (Match match : matches) {
-            Round round = roundDAO.getRoundById(match.getRoundId());
+            // Get round from cache instead of querying database each time
+            Round round = roundCache.get(match.getRoundId());
 
             // Find the player's result in this match
             String result = "N/A";

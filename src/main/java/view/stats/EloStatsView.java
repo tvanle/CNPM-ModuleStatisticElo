@@ -294,8 +294,16 @@ public class EloStatsView extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = outsubListPlayers.getSelectedRow();
                 if (selectedRow >= 0) {
+                    // Get the selected player ID and tournament ID
+                    String playerId = (String) outsubListPlayers.getValueAt(selectedRow, 0);
+                    String tournamentName = (String) inTournament.getSelectedItem();
+                    String tournamentId = "T1"; // Default to T1
+                    if ("European Chess Open 2025".equals(tournamentName)) {
+                        tournamentId = "T2";
+                    }
+
                     dispose();
-                    new MatchesListView().setVisible(true);
+                    new MatchesListView(playerId, tournamentId).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select a player!", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
@@ -382,6 +390,11 @@ public class EloStatsView extends JFrame {
         for (Tournament tournament : tournaments) {
             inTournament.addItem(tournament.getName());
         }
+    }
+
+    // Method to set the selected tournament
+    public void selectTournament(String tournamentName) {
+        inTournament.setSelectedItem(tournamentName);
     }
 
     // Helper method to style buttons
