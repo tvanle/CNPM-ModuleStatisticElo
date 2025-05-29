@@ -7,8 +7,10 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JFileChooser;
 import dao.ChessPlayerDAO;
 import dao.TournamentDAO;
 import model.ChessPlayer;
@@ -304,7 +306,59 @@ public class EloStatsView extends JFrame {
         subExportStats.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Stats exported successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                if (currentPlayers == null || currentPlayers.isEmpty()) {
+                    JOptionPane.showMessageDialog(EloStatsView.this, 
+                        "Please select a tournament first!", 
+                        "No Data to Export", 
+                        JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                // Show file chooser dialog
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Export Chess Player Stats to CSV");
+                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+                // Set initial directory to user's home
+                fileChooser.setCurrentDirectory(new java.io.File(System.getProperty("user.home")));
+
+                if (fileChooser.showSaveDialog(EloStatsView.this) == JFileChooser.APPROVE_OPTION) {
+                    try {
+                        // Get selected directory
+                        String selectedDirectory = fileChooser.getSelectedFile().getAbsolutePath();
+
+                        // Create filename with timestamp
+                        String timestamp = java.time.LocalDateTime.now().format(
+                            java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+                        String tournamentName = (String) inTournament.getSelectedItem();
+                        String safeFileName = tournamentName.replaceAll("[^a-zA-Z0-9_-]", "_");
+
+                        String fileName = safeFileName + "_elo_stats_" + timestamp + ".csv";
+                        String fullPath = selectedDirectory + File.separator + fileName;
+
+                        // Use CSV exporter utility to export the data
+                        boolean success = utils.CsvExporter.exportTableToCsv(outsubListPlayers.getModel(), fullPath, tournamentName);
+
+                        if (success) {
+                            // Show success dialog with file path
+                            JOptionPane.showMessageDialog(EloStatsView.this,
+                                "<html>Stats exported successfully to:<br/>" + fullPath + "</html>",
+                                "Export Successful",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(EloStatsView.this,
+                                "Failed to export data. Please try again.",
+                                "Export Failed",
+                                JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(EloStatsView.this,
+                            "An error occurred while exporting: " + ex.getMessage(),
+                            "Export Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    }
+                }
             }
         });
 

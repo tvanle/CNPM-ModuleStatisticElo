@@ -153,13 +153,11 @@ public class LoginView extends JFrame {
         loginSubheader.setForeground(TEXT_COLOR);
         loginSubheader.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Username field with icon
-        JPanel usernameFieldContainer = new JPanel(new BorderLayout());
-        usernameFieldContainer.setOpaque(false);
-        JLabel usernameIcon = new JLabel("👤");
-        usernameIcon.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        usernameIcon.setBorder(new EmptyBorder(0, 10, 0, 5));
-        usernameIcon.setForeground(SECONDARY_COLOR);
+        // Username field
+        JPanel usernamePanel = new JPanel();
+        usernamePanel.setLayout(new BoxLayout(usernamePanel, BoxLayout.Y_AXIS));
+        usernamePanel.setOpaque(false);
+        usernamePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel usernameLabel = new JLabel("Username");
         usernameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -168,24 +166,15 @@ public class LoginView extends JFrame {
         inUsername = new JTextField(15);
         styleTextField(inUsername);
 
-        usernameFieldContainer.add(usernameIcon, BorderLayout.WEST);
-        usernameFieldContainer.add(inUsername, BorderLayout.CENTER);
-
-        JPanel usernamePanel = new JPanel();
-        usernamePanel.setLayout(new BoxLayout(usernamePanel, BoxLayout.Y_AXIS));
-        usernamePanel.setOpaque(false);
-        usernamePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         usernamePanel.add(usernameLabel);
         usernamePanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        usernamePanel.add(usernameFieldContainer);
+        usernamePanel.add(inUsername);
 
-        // Password field with icon
-        JPanel passwordFieldContainer = new JPanel(new BorderLayout());
-        passwordFieldContainer.setOpaque(false);
-        JLabel passwordIcon = new JLabel("🔒");
-        passwordIcon.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        passwordIcon.setBorder(new EmptyBorder(0, 10, 0, 5));
-        passwordIcon.setForeground(SECONDARY_COLOR);
+        // Password field
+        JPanel passwordPanel = new JPanel();
+        passwordPanel.setLayout(new BoxLayout(passwordPanel, BoxLayout.Y_AXIS));
+        passwordPanel.setOpaque(false);
+        passwordPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel passwordLabel = new JLabel("Password");
         passwordLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -194,18 +183,11 @@ public class LoginView extends JFrame {
         inPassword = new JPasswordField(15);
         styleTextField(inPassword);
 
-        passwordFieldContainer.add(passwordIcon, BorderLayout.WEST);
-        passwordFieldContainer.add(inPassword, BorderLayout.CENTER);
-
-        JPanel passwordPanel = new JPanel();
-        passwordPanel.setLayout(new BoxLayout(passwordPanel, BoxLayout.Y_AXIS));
-        passwordPanel.setOpaque(false);
-        passwordPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         passwordPanel.add(passwordLabel);
         passwordPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        passwordPanel.add(passwordFieldContainer);
+        passwordPanel.add(inPassword);
 
-        // Spacer panel to maintain layout without remember me checkbox
+        // Spacer panel
         JPanel spacerPanel = new JPanel();
         spacerPanel.setOpaque(false);
         spacerPanel.setPreferredSize(new Dimension(300, 10));
@@ -244,7 +226,7 @@ public class LoginView extends JFrame {
         // Start animation
         chessAnimation.startAnimation();
 
-        // Xử lý sự kiện nút đăng nhập
+        // Handle login button action
         subLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -259,7 +241,6 @@ public class LoginView extends JFrame {
                 SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
                     @Override
                     protected Boolean doInBackground() throws Exception {
-                        // Simulate network delay for login
                         Thread.sleep(800);
                         Manager manager = new Manager(username, password);
                         ManagerDAO managerDAO = new ManagerDAO();
@@ -276,10 +257,10 @@ public class LoginView extends JFrame {
                             } else {
                                 showLoginErrorAnimation();
                                 JOptionPane.showMessageDialog(
-                                    LoginView.this,
-                                    "Invalid username or password. Please try again.",
-                                    "Login Failed",
-                                    JOptionPane.ERROR_MESSAGE
+                                        LoginView.this,
+                                        "Invalid username or password. Please try again.",
+                                        "Login Failed",
+                                        JOptionPane.ERROR_MESSAGE
                                 );
                                 subLogin.setText("LOG IN");
                                 subLogin.setEnabled(true);
@@ -305,46 +286,15 @@ public class LoginView extends JFrame {
             }
         });
     }
-    // Helper method to create a styled panel with label, icon, and input field
-    private JPanel createStyledInputPanel(String labelText, String iconText, JTextField textField) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setOpaque(false);
-        panel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Label
-        JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        label.setForeground(TEXT_COLOR);
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Field container with icon
-        JPanel fieldContainer = new JPanel(new BorderLayout());
-        fieldContainer.setOpaque(false);
-
-        JLabel icon = new JLabel(iconText);
-        icon.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        icon.setBorder(new EmptyBorder(0, 10, 0, 5));
-        icon.setForeground(SECONDARY_COLOR);
-
-        fieldContainer.add(icon, BorderLayout.WEST);
-        fieldContainer.add(textField, BorderLayout.CENTER);
-
-        // Add components to panel
-        panel.add(label);
-        panel.add(Box.createRigidArea(new Dimension(0, 5)));
-        panel.add(fieldContainer);
-
-        return panel;
-    }
 
     // Helper method to style text fields
     private void styleTextField(JTextField textField) {
         textField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        textField.setMargin(new Insets(8, 10, 8, 10));
+        textField.setMargin(new Insets(5, 10, 5, 10));
+        textField.setPreferredSize(new Dimension(300, 35)); // Reduced height
         textField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+                BorderFactory.createEmptyBorder(3, 8, 3, 8)
         ));
 
         // Add focus effects
@@ -352,16 +302,16 @@ public class LoginView extends JFrame {
             @Override
             public void focusGained(FocusEvent e) {
                 textField.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(SECONDARY_COLOR, 2, true),
-                    BorderFactory.createEmptyBorder(5, 10, 5, 10)
+                        BorderFactory.createLineBorder(SECONDARY_COLOR, 2, true),
+                        BorderFactory.createEmptyBorder(3, 8, 3, 8)
                 ));
             }
 
             @Override
             public void focusLost(FocusEvent e) {
                 textField.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
-                    BorderFactory.createEmptyBorder(5, 10, 5, 10)
+                        BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+                        BorderFactory.createEmptyBorder(3, 8, 3, 8)
                 ));
             }
         });
@@ -416,21 +366,21 @@ public class LoginView extends JFrame {
                 for (int i = 0; i < 5; i++) {
                     if (i % 2 == 0) {
                         inUsername.setBorder(BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(Color.RED, 2, true),
-                            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+                                BorderFactory.createLineBorder(Color.RED, 2, true),
+                                BorderFactory.createEmptyBorder(3, 8, 3, 8)
                         ));
                         inPassword.setBorder(BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(Color.RED, 2, true),
-                            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+                                BorderFactory.createLineBorder(Color.RED, 2, true),
+                                BorderFactory.createEmptyBorder(3, 8, 3, 8)
                         ));
                     } else {
                         inUsername.setBorder(BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
-                            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+                                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+                                BorderFactory.createEmptyBorder(3, 8, 3, 8)
                         ));
                         inPassword.setBorder(BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
-                            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+                                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+                                BorderFactory.createEmptyBorder(3, 8, 3, 8)
                         ));
                     }
                     Thread.sleep(100);
@@ -454,8 +404,8 @@ public class LoginView extends JFrame {
 
         // Pieces represented by Unicode characters
         private final String[] pieces = {
-            "♔", "♕", "♖", "♗", "♘", "♙",
-            "♚", "♛", "♜", "♝", "♞", "♟"
+                "♔", "♕", "♖", "♗", "♘", "♙",
+                "♚", "♛", "♜", "♝", "♞", "♟"
         };
 
         // Store piece positions and animations

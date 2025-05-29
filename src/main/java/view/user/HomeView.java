@@ -62,7 +62,7 @@ public class HomeView extends JFrame {
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
         };
-        headerPanel.setPreferredSize(new Dimension(900, 80));
+        headerPanel.setPreferredSize(new Dimension(900, 100)); // Increased height from 80 to 100
 
         // Window control buttons (close)
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -92,13 +92,16 @@ public class HomeView extends JFrame {
         controlPanel.add(btnClose);
 
         // Title and welcome message
-        JPanel titlePanel = new JPanel();
-        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        JPanel titlePanel = new JPanel(new GridBagLayout()); // Use GridBagLayout for better centering
         titlePanel.setOpaque(false);
-        titlePanel.setBorder(new EmptyBorder(10, 20, 10, 20));
+
+        JPanel textContainer = new JPanel();
+        textContainer.setLayout(new BoxLayout(textContainer, BoxLayout.Y_AXIS));
+        textContainer.setOpaque(false);
+        textContainer.setBorder(new EmptyBorder(15, 20, 15, 20)); // Increased vertical padding
 
         JLabel titleLabel = new JLabel("Chess Tournament Manager");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28)); // Increased font size
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -107,9 +110,11 @@ public class HomeView extends JFrame {
         welcomeLabel.setForeground(ACCENT_COLOR);
         welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        titlePanel.add(titleLabel);
-        titlePanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        titlePanel.add(welcomeLabel);
+        textContainer.add(titleLabel);
+        textContainer.add(Box.createRigidArea(new Dimension(0, 8))); // Increased spacing
+        textContainer.add(welcomeLabel);
+
+        titlePanel.add(textContainer); // Add the text container to the grid bag centered panel
 
         headerPanel.add(controlPanel, BorderLayout.NORTH);
         headerPanel.add(titlePanel, BorderLayout.CENTER);
