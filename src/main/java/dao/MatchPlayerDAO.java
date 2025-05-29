@@ -15,14 +15,14 @@ public class MatchPlayerDAO extends DAO {
     public List<Match> getMatches(String chessPlayerId, String tournamentId) {
         List<Match> matches = new ArrayList<>();
         try {
-            String sql = "SELECT m.* FROM MatchPlayer mp JOIN Match m ON mp.match_id = m.id WHERE mp.chess_player_id = ?";
+            String sql = "SELECT m.* FROM MatchPlayer mp JOIN Match m ON mp.matchId = m.id WHERE mp.chessPlayerId = ?";
             var pstmt = con.prepareStatement(sql);
             pstmt.setString(1, chessPlayerId);
             var rs = pstmt.executeQuery();
             while (rs.next()) {
                 Match match = new Match(
                     rs.getString("id"),
-                    rs.getString("round_id"),
+                    rs.getString("roundId"),
                     rs.getString("date")
                 );
                 matches.add(match);
@@ -38,17 +38,17 @@ public class MatchPlayerDAO extends DAO {
     public List<MatchPlayer> getMatchPlayersByMatch(String matchId) {
         List<MatchPlayer> result = new ArrayList<>();
         try {
-            String sql = matchId == null ? "SELECT * FROM MatchPlayer" : "SELECT * FROM MatchPlayer WHERE match_id = ?";
+            String sql = matchId == null ? "SELECT * FROM MatchPlayer" : "SELECT * FROM MatchPlayer WHERE matchId = ?";
             var pstmt = matchId == null ? con.prepareStatement(sql) : con.prepareStatement(sql);
             if (matchId != null) pstmt.setString(1, matchId);
             var rs = pstmt.executeQuery();
             while (rs.next()) {
                 MatchPlayer mp = new MatchPlayer(
                     rs.getString("id"),
-                    rs.getString("match_id"),
-                    rs.getString("chess_player_id"),
+                    rs.getString("matchId"),
+                    rs.getString("chessPlayerId"),
                     rs.getString("role"),
-                    rs.getInt("elo_change"),
+                    rs.getInt("eloChange"),
                     rs.getString("note"),
                     rs.getString("result")
                 );

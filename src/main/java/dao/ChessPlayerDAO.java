@@ -12,7 +12,7 @@ public class ChessPlayerDAO extends DAO {
     public List<ChessPlayer> getChessPlayersByTournament(String tournamentId) {
         List<ChessPlayer> players = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM ChessPlayer WHERE tournament_id = ?";
+            String sql = "SELECT cp.* FROM TournamentChessPlayer tcp JOIN ChessPlayer cp ON tcp.chessPlayerId = cp.id WHERE tcp.tournamentId = ?";
             var pstmt = con.prepareStatement(sql);
             pstmt.setString(1, tournamentId);
             var rs = pstmt.executeQuery();
@@ -21,9 +21,9 @@ public class ChessPlayerDAO extends DAO {
                     rs.getString("id"),
                     rs.getString("name"),
                     rs.getString("nationality"),
-                    rs.getInt("birth_year"),
-                    rs.getString("fide_id"),
-                    rs.getInt("initial_elo")
+                    rs.getInt("birthYear"),
+                    rs.getString("icard"),
+                    rs.getInt("initialElo")
                 );
                 players.add(player);
             }

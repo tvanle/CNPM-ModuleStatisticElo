@@ -18,7 +18,7 @@ public class MatchDAO extends DAO {
             if (rs.next()) {
                 Match match = new Match(
                     rs.getString("id"),
-                    rs.getString("round_id"),
+                    rs.getString("roundId"),
                     rs.getString("date")
                 );
                 rs.close();

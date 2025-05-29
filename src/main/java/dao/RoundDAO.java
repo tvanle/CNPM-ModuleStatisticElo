@@ -20,24 +20,24 @@ public class RoundDAO extends DAO {
             if (rs.next()) {
                 round = new Round(
                     rs.getString("id"),
-                    rs.getString("tournament_id"),
-                    rs.getInt("round_num"),
-                    rs.getString("start_date"),
-                    rs.getString("end_date")
+                    rs.getString("tournamentId"),
+                    rs.getInt("roundNum"),
+                    rs.getString("startDate"),
+                    rs.getString("endDate")
                 );
             }
             rs.close();
             pstmt.close();
             if (round != null) {
                 List<Match> roundMatches = new ArrayList<>();
-                String sqlMatch = "SELECT * FROM Match WHERE round_id = ?";
+                String sqlMatch = "SELECT * FROM Match WHERE roundId = ?";
                 var pstmtMatch = con.prepareStatement(sqlMatch);
                 pstmtMatch.setString(1, roundId);
                 var rsMatch = pstmtMatch.executeQuery();
                 while (rsMatch.next()) {
                     Match match = new Match(
                         rsMatch.getString("id"),
-                        rsMatch.getString("round_id"),
+                        rsMatch.getString("roundId"),
                         rsMatch.getString("date")
                     );
                     roundMatches.add(match);

@@ -15,7 +15,7 @@ public class ManagerDAO extends DAO {
             pstmt.setString(2, manager.getPassword());
             var rs = pstmt.executeQuery();
             if (rs.next()) {
-                manager.setPosition(rs.getString("position"));
+                // manager.setPosition(rs.getString("position")); // Removed: column does not exist
                 rs.close();
                 pstmt.close();
                 return true;
