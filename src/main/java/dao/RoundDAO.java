@@ -30,7 +30,7 @@ public class RoundDAO extends DAO {
             pstmt.close();
             if (round != null) {
                 List<Match> roundMatches = new ArrayList<>();
-                String sqlMatch = "SELECT * FROM Match WHERE roundId = ?";
+                String sqlMatch = "SELECT * FROM `Match` WHERE roundId = ?";
                 var pstmtMatch = con.prepareStatement(sqlMatch);
                 pstmtMatch.setString(1, roundId);
                 var rsMatch = pstmtMatch.executeQuery();

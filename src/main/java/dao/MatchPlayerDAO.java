@@ -15,7 +15,7 @@ public class MatchPlayerDAO extends DAO {
     public List<Match> getMatches(String chessPlayerId, String tournamentId) {
         List<Match> matches = new ArrayList<>();
         try {
-            String sql = "SELECT m.* FROM MatchPlayer mp JOIN Match m ON mp.matchId = m.id WHERE mp.chessPlayerId = ?";
+            String sql = "SELECT m.* FROM MatchPlayer mp JOIN `Match` m ON mp.matchId = m.id WHERE mp.chessPlayerId = ?";
             var pstmt = con.prepareStatement(sql);
             pstmt.setString(1, chessPlayerId);
             var rs = pstmt.executeQuery();

@@ -46,9 +46,9 @@ public class ChessPlayerDAO extends DAO {
                     rs.getString("id"),
                     rs.getString("name"),
                     rs.getString("nationality"),
-                    rs.getInt("birth_year"),
-                    rs.getString("fide_id"),
-                    rs.getInt("initial_elo")
+                    rs.getInt("birthYear"),
+                    rs.getString("icard"),
+                    rs.getInt("initialElo")
                 );
                 rs.close();
                 pstmt.close();
@@ -73,9 +73,9 @@ public class ChessPlayerDAO extends DAO {
                     rs.getString("id"),
                     rs.getString("name"),
                     rs.getString("nationality"),
-                    rs.getInt("birth_year"),
-                    rs.getString("fide_id"),
-                    rs.getInt("initial_elo")
+                    rs.getInt("birthYear"),
+                    rs.getString("icard"),
+                    rs.getInt("initialElo")
                 );
                 players.add(player);
             }
