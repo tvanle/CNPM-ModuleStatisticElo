@@ -294,16 +294,30 @@ public class EloStatsView extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = outsubListPlayers.getSelectedRow();
                 if (selectedRow >= 0) {
-                    // Get the selected player ID and tournament ID
+                    // Get the selected player from currentPlayers list
                     String playerId = (String) outsubListPlayers.getValueAt(selectedRow, 0);
+                    ChessPlayer selectedPlayer = null;
+                    for (ChessPlayer p : currentPlayers) {
+                        if (p.getId().equals(playerId)) {
+                            selectedPlayer = p;
+                            break;
+                        }
+                    }
+
+                    // Get tournament from current selection
                     String tournamentName = (String) inTournament.getSelectedItem();
-                    String tournamentId = "T1"; // Default to T1
-                    if ("European Chess Open 2025".equals(tournamentName)) {
-                        tournamentId = "T2";
+                    TournamentDAO tournamentDAO = new TournamentDAO();
+                    List<Tournament> tournaments = tournamentDAO.getAllTournaments();
+                    Tournament selectedTournament = null;
+                    for (Tournament t : tournaments) {
+                        if (t.getName().equals(tournamentName)) {
+                            selectedTournament = t;
+                            break;
+                        }
                     }
 
                     dispose();
-                    new MatchesListView(playerId, tournamentId).setVisible(true);
+                    new MatchesListView(selectedPlayer, selectedTournament).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select a player!", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
@@ -311,7 +325,7 @@ public class EloStatsView extends JFrame {
         });
 
         // Xử lý sự kiện nút "Export Stats"
-        subExportStats.addActionListener(new ActionListener() {
+        subExportStats.addActionListener(new ActiaonListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (currentPlayers == null || currentPlayers.isEmpty()) {

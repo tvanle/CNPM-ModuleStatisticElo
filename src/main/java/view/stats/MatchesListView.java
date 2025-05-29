@@ -2,9 +2,7 @@ package view.stats;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,25 +10,23 @@ import java.util.ArrayList;
 import java.util.List;
 import dao.MatchPlayerDAO;
 import dao.RoundDAO;
-import model.Match;
-import model.MatchPlayer;
-import model.Round;
+import model.*;
 
 public class MatchesListView extends JFrame {
     private JTable outsubListMatches;
     private JButton subViewMatchDetail;
     private JButton subBackToEloStats;
-    private JLabel playerInfoLabel;
-    private String playerId;
-    private String tournamentId;
+    private JLabel      playerInfoLabel;
+    private ChessPlayer player;
+    private Tournament  tournament;
 
     // Cache data to avoid unnecessary database queries
     private List<Match> cachedMatches;
     private List<MatchPlayer> cachedMatchPlayers;
 
-    public MatchesListView(String playerId, String tournamentId) {
-        this.playerId = playerId;
-        this.tournamentId = tournamentId;
+            public MatchesListView(ChessPlayer player, Tournament tournament) {
+        this.player = player;
+        this.tournament = tournament;
         setTitle("Matches List - Player");
         setSize(700, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -90,8 +86,8 @@ public class MatchesListView extends JFrame {
         // Thêm panel vào frame
         add(mainPanel);
 
-        // Tải danh sách trận đấu với player ID đã chọn
-        loadMatches(playerId, tournamentId);
+        // Tải danh sách trận đấu với player và tournament objects
+        loadMatches(this.player.getId(), this.tournament.getId());
 
         // Xử lý sự kiện nút "View Match Detail"
         subViewMatchDetail.addActionListener(new ActionListener() {
@@ -136,12 +132,8 @@ public class MatchesListView extends JFrame {
                 EloStatsView eloStatsView = new EloStatsView();
                 eloStatsView.setVisible(true);
 
-                // Set the tournament dropdown to the correct tournament
-                if ("T2".equals(tournamentId)) {
-                    eloStatsView.selectTournament("European Chess Open 2025");
-                } else {
-                    eloStatsView.selectTournament("World Chess Championship 2025");
-                }
+                // Set the tournament dropdown to the correct tournament name
+                eloStatsView.selectTournament(tournament.getName());
             }
         });
     }
@@ -191,7 +183,7 @@ public class MatchesListView extends JFrame {
         List<MatchPlayer> matchPlayers = this.cachedMatchPlayers;
 
         // Set player info
-        playerInfoLabel.setText("Player ID: " + chessPlayerId + " | Tournament ID: " + tournamentId + " | Total Matches: " + matches.size());
+        playerInfoLabel.setText("Player: " + player.getName() + " | Tournament: " + tournament.getName() + " | Total Matches: " + matches.size());
 
         DefaultTableModel model = (DefaultTableModel) outsubListMatches.getModel();
         model.setRowCount(0); // Clear existing rows
@@ -230,8 +222,8 @@ public class MatchesListView extends JFrame {
                 }
             }
 
-            // Tournament name would typically come from the round's tournament
-            String tournamentName = round != null ? "Tournament " + tournamentId : "Unknown";
+            // Tournament name comes from the tournament object
+            String tournamentName = tournament.getName();
 
             // Format date better (assuming it's in YYYY-MM-DD format)
             String formattedDate = match.getDate();
@@ -247,8 +239,8 @@ public class MatchesListView extends JFrame {
 
         // Update player info label with statistics
         playerInfoLabel.setText(String.format(
-            "<html>Player ID: <b>%s</b> | Total Matches: <b>%d</b> | Record: <font color='green'><b>%d W</b></font> - <font color='red'><b>%d L</b></font> - <font color='#DAA520'><b>%d D</b></font></html>",
-            chessPlayerId, matches.size(), wins, losses, draws
+            "<html>Player: <b>%s</b> | Total Matches: <b>%d</b> | Record: <font color='green'><b>%d W</b></font> - <font color='red'><b>%d L</b></font> - <font color='#DAA520'><b>%d D</b></font></html>",
+            player.getName(), matches.size(), wins, losses, draws
         ));
     }
 }
