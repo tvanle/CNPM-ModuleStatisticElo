@@ -107,17 +107,11 @@ public class MatchesListView extends JFrame {
                         }
                     }
 
-                    // Get relevant match players
-                    List<MatchPlayer> relevantPlayers = new ArrayList<>();
-                    for (MatchPlayer mp : cachedMatchPlayers) {
-                        if (mp.getMatchId().equals(matchId)) {
-                            relevantPlayers.add(mp);
-                        }
+                    if (selectedMatch != null) {
+                        dispose();
+                        // Pass both the Match object and player to MatchDetailView
+                        new MatchDetailView(selectedMatch, player).setVisible(true);
                     }
-
-                    dispose();
-                    // Pass the Match object and relevant players to MatchDetailView
-                    new MatchDetailView(selectedMatch, relevantPlayers).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select a match!", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
@@ -174,13 +168,11 @@ public class MatchesListView extends JFrame {
     // Tải danh sách trận đấu with enhanced data display
     private void loadMatches(String chessPlayerId, String tournamentId) {
         MatchPlayerDAO matchPlayerDAO = new MatchPlayerDAO();
-        // Cache the match data
+        // Cache the match data with players already embedded
         this.cachedMatches = matchPlayerDAO.getMatches(chessPlayerId, tournamentId);
-        this.cachedMatchPlayers = matchPlayerDAO.getMatchPlayersByMatch(null);
 
         // Use the cached data for the rest of the method
         List<Match> matches = this.cachedMatches;
-        List<MatchPlayer> matchPlayers = this.cachedMatchPlayers;
 
         // Set player info
         playerInfoLabel.setText("Player: " + player.getName() + " | Tournament: " + tournament.getName() + " | Total Matches: " + matches.size());
@@ -207,10 +199,10 @@ public class MatchesListView extends JFrame {
             // Get round from cache instead of querying database each time
             Round round = roundCache.get(match.getRoundId());
 
-            // Find the player's result in this match
+            // Find the player's result in this match (now directly in the match object)
             String result = "N/A";
-            for (MatchPlayer mp : matchPlayers) {
-                if (mp.getMatchId().equals(match.getId()) && mp.getChessPlayerId().equals(chessPlayerId)) {
+            for (MatchPlayer mp : match.getPlayers()) {
+                if (mp.getChessPlayerId().equals(chessPlayerId)) {
                     result = mp.getResult();
 
                     // Count results for statistics

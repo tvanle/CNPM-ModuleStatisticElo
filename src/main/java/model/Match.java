@@ -1,11 +1,14 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Match implements Serializable {
     private String id;
     private String roundId;
     private String date;
+    private List<MatchPlayer> players = new ArrayList<>();
 
     public Match() {
         super();
@@ -39,5 +42,17 @@ public class Match implements Serializable {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public List<MatchPlayer> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<MatchPlayer> players) {
+        this.players = players;
+    }
+
+    public void addPlayer(MatchPlayer player) {
+        this.players.add(player);
     }
 }

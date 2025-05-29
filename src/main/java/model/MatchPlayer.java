@@ -4,24 +4,21 @@ import java.io.Serializable;
 
 public class MatchPlayer implements Serializable {
     private String id;
-    private String matchId;
-    private String chessPlayerId;
+    private ChessPlayer player;
     private int eloChange;
     private String result;
-    private String opponentName; // Added field
 
     public MatchPlayer() {
         super();
     }
 
-    public MatchPlayer(String id, String matchId, String chessPlayerId, int eloChange) {
-        this(id, matchId, chessPlayerId, eloChange, null);
+    public MatchPlayer(String id, ChessPlayer player, int eloChange) {
+        this(id, player, eloChange, null);
     }
 
-    public MatchPlayer(String id, String matchId, String chessPlayerId, int eloChange, String result) {
+    public MatchPlayer(String id, ChessPlayer player, int eloChange, String result) {
         this.id = id;
-        this.matchId = matchId;
-        this.chessPlayerId = chessPlayerId;
+        this.player = player;
         this.eloChange = eloChange;
         this.result = result;
     }
@@ -34,20 +31,16 @@ public class MatchPlayer implements Serializable {
         this.id = id;
     }
 
-    public String getMatchId() {
-        return matchId;
+    public ChessPlayer getPlayer() {
+        return player;
     }
 
-    public void setMatchId(String matchId) {
-        this.matchId = matchId;
+    public void setPlayer(ChessPlayer player) {
+        this.player = player;
     }
 
     public String getChessPlayerId() {
-        return chessPlayerId;
-    }
-
-    public void setChessPlayerId(String chessPlayerId) {
-        this.chessPlayerId = chessPlayerId;
+        return player != null ? player.getId() : null;
     }
 
     public int getEloChange() {
@@ -66,13 +59,12 @@ public class MatchPlayer implements Serializable {
         this.result = result;
     }
 
-    // Added getter and setter for opponentName
-    public String getOpponentName() {
-        return opponentName;
+    public String getPlayerName() {
+        return player != null ? player.getName() : "Unknown";
     }
 
-    public void setOpponentName(String opponentName) {
-        this.opponentName = opponentName;
+    public String getPlayerNationality() {
+        return player != null ? player.getNationality() : "Unknown";
     }
 }
 
