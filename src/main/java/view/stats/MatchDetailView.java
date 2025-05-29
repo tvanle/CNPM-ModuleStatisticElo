@@ -24,7 +24,6 @@ public class MatchDetailView extends JFrame {
     private String      matchId;
     private Match       matchData;
     private JPanel      matchInfoPanel;
-    private JButton     backButton;
     private JButton     homeButton;
     private JLabel      vsLabel;
     private JLabel      resultBanner;
@@ -244,25 +243,14 @@ public class MatchDetailView extends JFrame {
         navigationPanel.setOpaque(false);
         navigationPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
 
-        // Back button - renamed to Stats button
-        backButton = new JButton("📊 Back to Stats");
-        styleButton(backButton, SECONDARY_COLOR, Color.WHITE);
-
         // Home button
         homeButton = new JButton("🏠 Home");
         styleButton(homeButton, PRIMARY_COLOR, Color.WHITE);
 
         // Add buttons to panel
-        navigationPanel.add(backButton);
         navigationPanel.add(homeButton);
 
         // Add action listeners
-        backButton.addActionListener(e -> {
-            dispose();
-            // Go directly to EloStatsView
-            new EloStatsView().setVisible(true);
-        });
-
         homeButton.addActionListener(e -> {
             dispose();
             new view.user.HomeView().setVisible(true);
@@ -568,12 +556,6 @@ public class MatchDetailView extends JFrame {
                 opponentMatchPlayer = matchPlayers.get(1);
             }
 
-            // Update header VS label with focus on current player vs opponent
-            String vsText = currentMatchPlayer.getPlayerName() + " vs " + opponentMatchPlayer.getPlayerName();
-            if (player != null) {
-                vsText = "You vs " + opponentMatchPlayer.getPlayerName();
-            }
-            vsLabel.setText(vsText);
 
             // Create players title with more spacing
             JLabel playersLabel = new JLabel("Players");
@@ -597,10 +579,6 @@ public class MatchDetailView extends JFrame {
             if (player != null && currentMatchPlayer.getChessPlayerId().equals(player.getId())) {
                 JPanel indicatorPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
                 indicatorPanel.setOpaque(false);
-                JLabel youLabel = new JLabel("You");
-                youLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-                youLabel.setForeground(ACCENT_COLOR);
-                indicatorPanel.add(youLabel);
 
                 JPanel wrapperPanel = new JPanel(new BorderLayout());
                 wrapperPanel.setOpaque(false);
